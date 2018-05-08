@@ -1,5 +1,12 @@
 #!/bin/sh
 
+### VARIABLES ###############################################################################################
+
+NUMEROGRUPO=$PWD"/grupo3"
+
+
+### FUNCIONES ###############################################################################################
+
 #Devuelve 0 en caso de que la version de Perl sea mayor o igual a la 5, 1 en caso contrario.
 function checkPerlVersion
 {
@@ -12,5 +19,10 @@ function checkPerlVersion
      return 1
   fi
 }
+
+##############################################################################################################
+
+
+
 
 
