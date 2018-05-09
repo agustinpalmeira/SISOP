@@ -26,3 +26,10 @@ if  [[ $1 = "-r" ]]; then
     echo "Reparar instalacion"
 fi
 
+checkPerlVersion
+
+if [ $? -eq 0 ] ; then
+	echo 'La version de Perl es compatible (mayor o igual a la 5.0)'
+else
+	echo 'La version de Perl no es compatible (menor a la 5.0)'
+fi
