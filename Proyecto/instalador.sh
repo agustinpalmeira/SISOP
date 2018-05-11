@@ -2,7 +2,7 @@
 
 ### VARIABLES ###############################################################################################
 
-NUMEROGRUPO=$PWD"/grupo3"
+GRUPO=$PWD"/grupo3"
 
 
 ### FUNCIONES ###############################################################################################
@@ -20,16 +20,29 @@ function checkPerlVersion
   fi
 }
 
-##############################################################################################################
+function createMainFolder
+{
+  echo $GRUPO
+  mkdir -p "$GRUPO"
+}
 
-if  [[ $1 = "-r" ]]; then
+function selectOption
+{
+  if  [[ $1 = "-r" ]]; then
     echo "Reparar instalacion"
-fi
+  fi
+}
+
+##############################################################################################################
+### MAIN PROGRAM #############################################################################################
 
 checkPerlVersion
+  if [ $? -eq 0 ] ; then
+    echo 'La version de Perl es compatible (mayor o igual a la 5.0)'
+  else
+    echo 'La version de Perl no es compatible (menor a la 5.0)'
+  fi
+selectOption
+createMainFolder
 
-if [ $? -eq 0 ] ; then
-	echo 'La version de Perl es compatible (mayor o igual a la 5.0)'
-else
-	echo 'La version de Perl no es compatible (menor a la 5.0)'
-fi
+##############################################################################################################
