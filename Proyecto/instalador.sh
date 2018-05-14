@@ -3,6 +3,7 @@
 ### VARIABLES ###############################################################################################
 
 GRUPO=$PWD"/grupo3"
+DIRCONF="dirconf"
 EJECUTABLES_DIR="EJECUTABLES"             # 1) El directorio de ejecutables
 MAESTROS_TABLAS_DIR="MAESTROS"            # 2) El directorio de archivos maestros y tablas del sistema (aquí no van los datos de prueba!!)
 ARRIBOS_DIR="ARRIBOS"                     # 3) El directorio de arribo de archivos externos, es decir, los archivos que remiten las subsidiarias
@@ -113,19 +114,20 @@ function readSubDirectories {
 }
 
 function createSubDirectories {
-    mkdir -p "$GRUPO/$EJECUTABLES_DIR"
-    mkdir -p "$GRUPO/$MAESTROS_TABLAS_DIR"
-    mkdir -p "$GRUPO/$ARRIBOS_DIR"
-    mkdir -p "$GRUPO/$NOVEDADES_ACEPTADAS_DIR"
-    mkdir -p "$GRUPO/$RECHAZADOS_DIR"
-    mkdir -p "$GRUPO/$PROCESADOS_DIR"
-    mkdir -p "$GRUPO/$REPORTES_DIR"
-    mkdir -p "$GRUPO/$COMANDOS_LOGS_DIR"
+  mkdir -p "$GRUPO/$DIRCONF"
+  mkdir -p "$GRUPO/$EJECUTABLES_DIR"
+  mkdir -p "$GRUPO/$MAESTROS_TABLAS_DIR"
+  mkdir -p "$GRUPO/$ARRIBOS_DIR"
+  mkdir -p "$GRUPO/$NOVEDADES_ACEPTADAS_DIR"
+  mkdir -p "$GRUPO/$RECHAZADOS_DIR"
+  mkdir -p "$GRUPO/$PROCESADOS_DIR"
+  mkdir -p "$GRUPO/$REPORTES_DIR"
+  mkdir -p "$GRUPO/$COMANDOS_LOGS_DIR"
 }
 
 function showDirectoriesConfiguration {
   echo "TP SO7508 Primer Cuatrimestre 2018. Tema O Copyright © Grupo 03"
-  echo "Librería del Sistema: dirconf"
+  echo "Librería del Sistema: $GRUPO/$DIRCONF"
   echo "Ejecutables en: $GRUPO/$EJECUTABLES_DIR."
   echo "Directorio para los archivos maestros: $GRUPO/$MAESTROS_TABLAS_DIR."
   echo "Directorio para el arribo de archivos externos: $GRUPO/$ARRIBOS_DIR."
