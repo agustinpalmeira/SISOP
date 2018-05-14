@@ -117,14 +117,14 @@ function readSubDirectories
 
 function createSubDirectories 
 {
-    mkdir -p "$EJECUTABLES_DIR"
-    mkdir -p "$MAESTROS_TABLAS_DIR"
-    mkdir -p "$ARRIBOS_DIR"
-    mkdir -p "$NOVEDADES_ACEPTADAS_DIR"
-    mkdir -p "$RECHAZADOS_DIR"
-    mkdir -p "$PROCESADOS_DIR"
-    mkdir -p "$REPORTES_DIR"
-    mkdir -p "$COMANDOS_LOGS_DIR"
+    mkdir -p "$GRUPO/$EJECUTABLES_DIR"
+    mkdir -p "$GRUPO/$MAESTROS_TABLAS_DIR"
+    mkdir -p "$GRUPO/$ARRIBOS_DIR"
+    mkdir -p "$GRUPO/$NOVEDADES_ACEPTADAS_DIR"
+    mkdir -p "$GRUPO/$RECHAZADOS_DIR"
+    mkdir -p "$GRUPO/$PROCESADOS_DIR"
+    mkdir -p "$GRUPO/$REPORTES_DIR"
+    mkdir -p "$GRUPO/$COMANDOS_LOGS_DIR"
 }
 
 ##############################################################################################################
