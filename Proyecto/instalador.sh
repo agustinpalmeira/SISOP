@@ -12,8 +12,6 @@ PROCESADOS_DIR="PROCESADOS"               # 6) El directorio donde se depositan 
 REPORTES_DIR="REPORTES"                   # 7) El directorio donde se depositan los reportes
 COMANDOS_LOGS_DIR="LOGS"                  # 8) El directorio donde se depositan los logs de los comandos 
 
-
-
 ### FUNCIONES ###############################################################################################
 
 #Devuelve 0 en caso de que la version de Perl sea mayor o igual a la 5, 1 en caso contrario.
@@ -42,42 +40,111 @@ function selectOption
   fi
 }
 
-function createSubDirectory
+function readSubDirectories 
 {
-  echo $2
-  DIRECTORY=$1
+  echo "Por favor introduzca el directorio de ejecutables (Si presiona ENTER se creara el Default: $EJECUTABLES_DIR)"
   read -r NEW_DIR
   if [ ! "$NEW_DIR" == "" ]
   then
-    DIRECTORY="$NEW_DIR"
+    EJECUTABLES_DIR="$NEW_DIR"
     break;
   fi
-  mkdir -p "$DIRECTORY"
+
+  echo "Por favor introduzca el directorio de archivos maestros y tablas (Si presiona ENTER se creara el Default: $MAESTROS_TABLAS_DIR)"
+  read -r NEW_DIR
+  if [ ! "$NEW_DIR" == "" ]
+  then
+    MAESTROS_TABLAS_DIR="$NEW_DIR"
+    break;
+  fi
+
+  echo "Por favor introduzca el directorio de los arribos (Si presiona ENTER se creara el Default: $ARRIBOS_DIR)" 
+  read -r NEW_DIR
+  if [ ! "$NEW_DIR" == "" ]
+  then
+    ARRIBOS_DIR="$NEW_DIR"
+    break;
+  fi
+
+  echo "Por favor introduzca el directorio de novedades aceptadas (Si presiona ENTER se creara el Default: $NOVEDADES_ACEPTADAS_DIR)"
+  read -r NEW_DIR
+  if [ ! "$NEW_DIR" == "" ]
+  then
+    NOVEDADES_ACEPTADAS_DIR="$NEW_DIR"
+    break;
+  fi
+
+  echo "Por favor introduzca el directorio de rechazados (Si presiona ENTER se creara el Default: $RECHAZADOS_DIR)"
+  read -r NEW_DIR
+  if [ ! "$NEW_DIR" == "" ]
+  then
+    RECHAZADOS_DIR="$NEW_DIR"
+    break;
+  fi
+
+  echo "Por favor introduzca el directorio de procesados (Si presiona ENTER se creara el Default: $PROCESADOS_DIR)"
+  read -r NEW_DIR
+  if [ ! "$NEW_DIR" == "" ]
+  then
+    PROCESADOS_DIR="$NEW_DIR"
+    break;
+  fi
+
+  echo "Por favor introduzca el directorio de reportes (Si presiona ENTER se creara el Default: $REPORTES_DIR)"
+  read -r NEW_DIR
+  if [ ! "$NEW_DIR" == "" ]
+  then
+    REPORTES_DIR="$NEW_DIR"
+    break;
+  fi
+
+  echo "Por favor introduzca el directorio de command logs (Si presiona ENTER se creara el Default: $COMANDOS_LOGS_DIR)"
+  read -r NEW_DIR
+  if [ ! "$NEW_DIR" == "" ]
+  then
+    COMANDOS_LOGS_DIR="$NEW_DIR"
+    break;
+  fi
+
+  #readSubDirectory "$MAESTROS_TABLAS_DIR" "Por favor introduzca el directorio de archivos maestros y tablas (Si presiona ENTER se creara el Default: $MAESTROS_TABLAS_DIR)"
+  #readSubDirectory "$ARRIBOS_DIR" "Por favor introduzca el directorio de los arribos (Si presiona ENTER se creara el Default: $ARRIBOS_DIR)"  
+  #readSubDirectory "NOVEDADES_ACEPTADAS_DIR" "Por favor introduzca el directorio de novedades aceptadas (Si presiona ENTER se creara el Default: $NOVEDADES_ACEPTADAS_DIR)"
+  #readSubDirectory "$RECHAZADOS_DIR" "Por favor introduzca el directorio de rechazados (Si presiona ENTER se creara el Default: $RECHAZADOS_DIR)"
+  #readSubDirectory "$PROCESADOS_DIR" "Por favor introduzca el directorio de procesados (Si presiona ENTER se creara el Default: $PROCESADOS_DIR)"
+  #readSubDirectory "$REPORTES_DIR" "Por favor introduzca el directorio de reportes (Si presiona ENTER se creara el Default: $REPORTES_DIR)"
+  #readSubDirectory "$COMANDOS_LOGS_DIR" "Por favor introduzca el directorio de command logs (Si presiona ENTER se creara el Default: $COMANDOS_LOGS_DIR)"
 }
 
 function createSubDirectories 
 {
-  createSubDirectory "$EJECUTABLES_DIR" "Por favor introduzca el directorio de ejecutables (Si presiona ENTER se creara el Default: $EJECUTABLES_DIR)"
-  createSubDirectory "$MAESTROS_TABLAS_DIR" "Por favor introduzca el directorio de archivos maestros y tablas (Si presiona ENTER se creara el Default: $MAESTROS_TABLAS_DIR)"
-  createSubDirectory "$ARRIBOS_DIR" "Por favor introduzca el directorio de los arribos (Si presiona ENTER se creara el Default: $ARRIBOS_DIR)"  
-  createSubDirectory "NOVEDADES_ACEPTADAS_DIR" "Por favor introduzca el directorio de novedades aceptadas (Si presiona ENTER se creara el Default: $NOVEDADES_ACEPTADAS_DIR)"
-  createSubDirectory "$RECHAZADOS_DIR" "Por favor introduzca el directorio de rechazados (Si presiona ENTER se creara el Default: $RECHAZADOS_DIR)"
-  createSubDirectory "$PROCESADOS_DIR" "Por favor introduzca el directorio de procesados (Si presiona ENTER se creara el Default: $PROCESADOS_DIR)"
-  createSubDirectory "$REPORTES_DIR" "Por favor introduzca el directorio de reportes (Si presiona ENTER se creara el Default: $REPORTES_DIR)"
-  createSubDirectory "$COMANDOS_LOGS_DIR" "Por favor introduzca el directorio de command logs (Si presiona ENTER se creara el Default: $COMANDOS_LOGS_DIR)"
+    mkdir -p "$EJECUTABLES_DIR"
+    mkdir -p "$MAESTROS_TABLAS_DIR"
+    mkdir -p "$ARRIBOS_DIR"
+    mkdir -p "$NOVEDADES_ACEPTADAS_DIR"
+    mkdir -p "$RECHAZADOS_DIR"
+    mkdir -p "$PROCESADOS_DIR"
+    mkdir -p "$REPORTES_DIR"
+    mkdir -p "$COMANDOS_LOGS_DIR"
 }
 
 ##############################################################################################################
 ### MAIN PROGRAM #############################################################################################
 
 checkPerlVersion
+  
   if [ $? -eq 0 ] ; then
     echo 'La version de Perl es compatible (mayor o igual a la 5.0)'
   else
     echo 'La version de Perl no es compatible (menor a la 5.0)'
   fi
+
 selectOption
+
 createMainDirectory
+
+readSubDirectories
+
 createSubDirectories
+
 
 ##############################################################################################################
