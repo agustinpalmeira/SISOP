@@ -45,7 +45,6 @@ function readSubDirectories {
   if [ ! "$NEW_DIR" == "" ]
   then
     EJECUTABLES_DIR="$NEW_DIR"
-    break;
   fi
 
   echo "Por favor introduzca el directorio de archivos maestros y tablas (Si presiona ENTER se creara el Default: $MAESTROS_TABLAS_DIR)"
@@ -53,7 +52,6 @@ function readSubDirectories {
   if [ ! "$NEW_DIR" == "" ]
   then
     MAESTROS_TABLAS_DIR="$NEW_DIR"
-    break;
   fi
 
   echo "Por favor introduzca el directorio de los arribos (Si presiona ENTER se creara el Default: $ARRIBOS_DIR)" 
@@ -61,7 +59,6 @@ function readSubDirectories {
   if [ ! "$NEW_DIR" == "" ]
   then
     ARRIBOS_DIR="$NEW_DIR"
-    break;
   fi
 
   echo "Por favor introduzca el directorio de novedades aceptadas (Si presiona ENTER se creara el Default: $NOVEDADES_ACEPTADAS_DIR)"
@@ -69,7 +66,6 @@ function readSubDirectories {
   if [ ! "$NEW_DIR" == "" ]
   then
     NOVEDADES_ACEPTADAS_DIR="$NEW_DIR"
-    break;
   fi
 
   echo "Por favor introduzca el directorio de rechazados (Si presiona ENTER se creara el Default: $RECHAZADOS_DIR)"
@@ -77,7 +73,6 @@ function readSubDirectories {
   if [ ! "$NEW_DIR" == "" ]
   then
     RECHAZADOS_DIR="$NEW_DIR"
-    break;
   fi
 
   echo "Por favor introduzca el directorio de procesados (Si presiona ENTER se creara el Default: $PROCESADOS_DIR)"
@@ -85,7 +80,6 @@ function readSubDirectories {
   if [ ! "$NEW_DIR" == "" ]
   then
     PROCESADOS_DIR="$NEW_DIR"
-    break;
   fi
 
   echo "Por favor introduzca el directorio de reportes (Si presiona ENTER se creara el Default: $REPORTES_DIR)"
@@ -93,7 +87,6 @@ function readSubDirectories {
   if [ ! "$NEW_DIR" == "" ]
   then
     REPORTES_DIR="$NEW_DIR"
-    break;
   fi
 
   echo "Por favor introduzca el directorio de command logs (Si presiona ENTER se creara el Default: $COMANDOS_LOGS_DIR)"
@@ -101,16 +94,7 @@ function readSubDirectories {
   if [ ! "$NEW_DIR" == "" ]
   then
     COMANDOS_LOGS_DIR="$NEW_DIR"
-    break;
   fi
-
-  #readSubDirectory "$MAESTROS_TABLAS_DIR" "Por favor introduzca el directorio de archivos maestros y tablas (Si presiona ENTER se creara el Default: $MAESTROS_TABLAS_DIR)"
-  #readSubDirectory "$ARRIBOS_DIR" "Por favor introduzca el directorio de los arribos (Si presiona ENTER se creara el Default: $ARRIBOS_DIR)"  
-  #readSubDirectory "NOVEDADES_ACEPTADAS_DIR" "Por favor introduzca el directorio de novedades aceptadas (Si presiona ENTER se creara el Default: $NOVEDADES_ACEPTADAS_DIR)"
-  #readSubDirectory "$RECHAZADOS_DIR" "Por favor introduzca el directorio de rechazados (Si presiona ENTER se creara el Default: $RECHAZADOS_DIR)"
-  #readSubDirectory "$PROCESADOS_DIR" "Por favor introduzca el directorio de procesados (Si presiona ENTER se creara el Default: $PROCESADOS_DIR)"
-  #readSubDirectory "$REPORTES_DIR" "Por favor introduzca el directorio de reportes (Si presiona ENTER se creara el Default: $REPORTES_DIR)"
-  #readSubDirectory "$COMANDOS_LOGS_DIR" "Por favor introduzca el directorio de command logs (Si presiona ENTER se creara el Default: $COMANDOS_LOGS_DIR)"
 }
 
 function createSubDirectories {
@@ -154,10 +138,25 @@ selectOption
 
 createMainDirectory
 
-readSubDirectories
+userConfirmation='No'
 
-createSubDirectories
+while [ $userConfirmation == 'No' ]
+do
+  readSubDirectories
+  showDirectoriesConfiguration
+  echo ''
+  echo '¿Confirma la instalación? (Si-No): '
+  read -r userConfirmation
 
-showDirectoriesConfiguration
+  if [ $userConfirmation == 'Si' ] ; then
+    createSubDirectories
+  fi
+done
+
+#if [ $userConfirmation == 'Si' ] ; then
+#  createSubDirectories
+#elif [ "$confirma" == "No" ] ; then
+
+
 
 ##############################################################################################################
