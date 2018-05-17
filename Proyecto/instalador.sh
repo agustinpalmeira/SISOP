@@ -40,19 +40,46 @@ function selectOption
 }
 
 function readSubDirectories {
-  echo "Por favor introduzca el directorio de ejecutables (Si presiona ENTER se creara el Default: $EJECUTABLES_DIR)"
-  read -r NEW_DIR
-  if [ ! "$NEW_DIR" == "" ]
-  then
-    EJECUTABLES_DIR="$NEW_DIR"
-  fi
 
-  echo "Por favor introduzca el directorio de archivos maestros y tablas (Si presiona ENTER se creara el Default: $MAESTROS_TABLAS_DIR)"
-  read -r NEW_DIR
-  if [ ! "$NEW_DIR" == "" ]
-  then
-    MAESTROS_TABLAS_DIR="$NEW_DIR"
-  fi
+  directoresArray=("$DIRCONF")
+
+  continueToNextStep=1
+
+  while [ ! $continueToNextStep -eq 0 ]
+  do
+    echo "Por favor introduzca el directorio de ejecutables (Si presiona ENTER se creara el Default: $EJECUTABLES_DIR)"
+    read -r NEW_DIR
+
+    checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+    continueToNextStep=$?
+    if [ $continueToNextStep -eq 0 ]
+    then
+      if [ ! "$NEW_DIR" == "" ]
+      then
+        EJECUTABLES_DIR="$NEW_DIR"
+      fi
+    fi
+  done
+
+  directoresArray=("$DIRCONF" "$EJECUTABLES_DIR")
+
+  continueToNextStep=1
+  while [ ! $continueToNextStep -eq 0 ]
+  do
+    echo "Por favor introduzca el directorio de archivos maestros y tablas (Si presiona ENTER se creara el Default: $MAESTROS_TABLAS_DIR)"
+    read -r NEW_DIR
+    checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+    continueToNextStep=$?
+    if [ $continueToNextStep -eq 0 ]
+    then
+      if [ ! "$NEW_DIR" == "" ]
+      then
+        MAESTROS_TABLAS_DIR="$NEW_DIR"
+      fi
+    fi
+  done
+
+  directoresArray=("$DIRCONF" "$EJECUTABLES_DIR" "$MAESTROS_TABLAS_DIR")
 
   echo "Por favor introduzca el directorio de los arribos (Si presiona ENTER se creara el Default: $ARRIBOS_DIR)" 
   read -r NEW_DIR
@@ -61,12 +88,16 @@ function readSubDirectories {
     ARRIBOS_DIR="$NEW_DIR"
   fi
 
+  directoresArray=("$DIRCONF" "$EJECUTABLES_DIR" "$MAESTROS_TABLAS_DIR" "$ARRIBOS_DIR")
+
   echo "Por favor introduzca el directorio de novedades aceptadas (Si presiona ENTER se creara el Default: $NOVEDADES_ACEPTADAS_DIR)"
   read -r NEW_DIR
   if [ ! "$NEW_DIR" == "" ]
   then
     NOVEDADES_ACEPTADAS_DIR="$NEW_DIR"
   fi
+
+  directoresArray=("$DIRCONF" "$EJECUTABLES_DIR" "$MAESTROS_TABLAS_DIR" "$ARRIBOS_DIR" "$NOVEDADES_ACEPTADAS_DIR")
 
   echo "Por favor introduzca el directorio de rechazados (Si presiona ENTER se creara el Default: $RECHAZADOS_DIR)"
   read -r NEW_DIR
@@ -75,12 +106,16 @@ function readSubDirectories {
     RECHAZADOS_DIR="$NEW_DIR"
   fi
 
+  directoresArray=("$DIRCONF" "$EJECUTABLES_DIR" "$MAESTROS_TABLAS_DIR" "$ARRIBOS_DIR" "$NOVEDADES_ACEPTADAS_DIR" "$RECHAZADOS_DIR")
+
   echo "Por favor introduzca el directorio de procesados (Si presiona ENTER se creara el Default: $PROCESADOS_DIR)"
   read -r NEW_DIR
   if [ ! "$NEW_DIR" == "" ]
   then
     PROCESADOS_DIR="$NEW_DIR"
   fi
+
+  directoresArray=("$DIRCONF" "$EJECUTABLES_DIR" "$MAESTROS_TABLAS_DIR" "$ARRIBOS_DIR" "$NOVEDADES_ACEPTADAS_DIR" "$RECHAZADOS_DIR" "$PROCESADOS_DIR")
 
   echo "Por favor introduzca el directorio de reportes (Si presiona ENTER se creara el Default: $REPORTES_DIR)"
   read -r NEW_DIR
@@ -89,12 +124,18 @@ function readSubDirectories {
     REPORTES_DIR="$NEW_DIR"
   fi
 
+  directoresArray=("$DIRCONF" "$EJECUTABLES_DIR" "$MAESTROS_TABLAS_DIR" "$ARRIBOS_DIR" "$NOVEDADES_ACEPTADAS_DIR" "$RECHAZADOS_DIR" "$PROCESADOS_DIR" "$REPORTES_DIR")
+
   echo "Por favor introduzca el directorio de command logs (Si presiona ENTER se creara el Default: $COMANDOS_LOGS_DIR)"
   read -r NEW_DIR
   if [ ! "$NEW_DIR" == "" ]
   then
     COMANDOS_LOGS_DIR="$NEW_DIR"
   fi
+
+  directoresArray=("$DIRCONF" "$EJECUTABLES_DIR" "$MAESTROS_TABLAS_DIR" "$ARRIBOS_DIR" "NOVEDADES_ACEPTADAS_DIR" "$RECHAZADOS_DIR" "$PROCESADOS_DIR" "$REPORTES_DIR" "$COMANDOS_LOGS_DIR")
+
+  echo ${directoresArray[@]}
 }
 
 function createSubDirectories {
@@ -123,6 +164,20 @@ function showDirectoriesConfiguration {
   echo "Estado de la instalación: LISTA"
 }
 
+function checkIfDirectoryNameIsInUse {
+  local n=$#
+  local value=${!n}
+  for ((i=1;i < $#;i++))
+    do
+      if [ "${!i}" == "${value}" ]
+        then
+          echo "El directorio $value ya se encuentra en uso."
+          return 1
+      fi
+    done
+  return 0 # Directory available.
+}
+
 ##############################################################################################################
 ### MAIN PROGRAM #############################################################################################
 
@@ -140,7 +195,7 @@ createMainDirectory
 
 userConfirmation='No'
 
-while [ $userConfirmation == 'No' ]
+while [ ! $userConfirmation == 'Si' ]
 do
   readSubDirectories
   showDirectoriesConfiguration
