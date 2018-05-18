@@ -71,8 +71,16 @@ function readSubDirectories {
   do
     echo "Por favor introduzca el directorio de archivos maestros y tablas (Si presiona ENTER se creara el Default: $MAESTROS_TABLAS_DIR)"
     read -r NEW_DIR
-    checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+
+    if [ "$NEW_DIR" == "" ]
+    then
+      checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$MAESTROS_TABLAS_DIR"
+    else
+      checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+    fi
+
     continueToNextStep=$?
+
     if [ $continueToNextStep -eq 0 ]
     then
       if [ ! "$NEW_DIR" == "" ]
@@ -91,8 +99,17 @@ function readSubDirectories {
   do
     echo "Por favor introduzca el directorio de los arribos (Si presiona ENTER se creara el Default: $ARRIBOS_DIR)" 
     read -r NEW_DIR
-    checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+
+    if [ "$NEW_DIR" == "" ]
+    then
+      checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$ARRIBOS_DIR"
+    else
+      checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+    fi
+
     continueToNextStep=$?
+
+
     if [ $continueToNextStep -eq 0 ]
     then
       if [ ! "$NEW_DIR" == "" ]
@@ -111,8 +128,16 @@ function readSubDirectories {
   do
     echo "Por favor introduzca el directorio de novedades aceptadas (Si presiona ENTER se creara el Default: $NOVEDADES_ACEPTADAS_DIR)"
     read -r NEW_DIR
-    checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+
+    if [ "$NEW_DIR" == "" ]
+    then
+      checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NOVEDADES_ACEPTADAS_DIR"
+    else
+      checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+    fi
+
     continueToNextStep=$?
+
     if [ $continueToNextStep -eq 0 ]
     then
       if [ ! "$NEW_DIR" == "" ]
@@ -131,8 +156,16 @@ function readSubDirectories {
   do
     echo "Por favor introduzca el directorio de rechazados (Si presiona ENTER se creara el Default: $RECHAZADOS_DIR)"
     read -r NEW_DIR
-    checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+
+    if [ "$NEW_DIR" == "" ]
+    then
+      checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$RECHAZADOS_DIR"
+    else
+      checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+    fi
+
     continueToNextStep=$?
+
     if [ $continueToNextStep -eq 0 ]
     then
       if [ ! "$NEW_DIR" == "" ]
@@ -151,8 +184,16 @@ function readSubDirectories {
   do
     echo "Por favor introduzca el directorio de procesados (Si presiona ENTER se creara el Default: $PROCESADOS_DIR)"
     read -r NEW_DIR
-    checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+
+    if [ "$NEW_DIR" == "" ]
+    then
+      checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$PROCESADOS_DIR"
+    else
+      checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+    fi
+
     continueToNextStep=$?
+
     if [ $continueToNextStep -eq 0 ]
     then
       if [ ! "$NEW_DIR" == "" ]
@@ -171,8 +212,16 @@ function readSubDirectories {
   do
     echo "Por favor introduzca el directorio de reportes (Si presiona ENTER se creara el Default: $REPORTES_DIR)"
     read -r NEW_DIR
-    checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+
+    if [ "$NEW_DIR" == "" ]
+    then
+      checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$REPORTES_DIR"
+    else
+      checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+    fi
+
     continueToNextStep=$?
+
     if [ $continueToNextStep -eq 0 ]
     then
       if [ ! "$NEW_DIR" == "" ]
@@ -191,8 +240,16 @@ function readSubDirectories {
   do
     echo "Por favor introduzca el directorio de command logs (Si presiona ENTER se creara el Default: $COMANDOS_LOGS_DIR)"
     read -r NEW_DIR
-    checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+
+    if [ "$NEW_DIR" == "" ]
+    then
+      checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$COMANDOS_LOGS_DIR"
+    else
+      checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+    fi
+
     continueToNextStep=$?
+
     if [ $continueToNextStep -eq 0 ]
     then
       if [ ! "$NEW_DIR" == "" ]
