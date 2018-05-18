@@ -45,6 +45,7 @@ function readSubDirectories {
 
   continueToNextStep=1
 
+  #Ejecutables
   while [ ! $continueToNextStep -eq 0 ]
   do
     echo "Por favor introduzca el directorio de ejecutables (Si presiona ENTER se creara el Default: $EJECUTABLES_DIR)"
@@ -64,6 +65,8 @@ function readSubDirectories {
   directoresArray=("$DIRCONF" "$EJECUTABLES_DIR")
 
   continueToNextStep=1
+
+  #Maestros
   while [ ! $continueToNextStep -eq 0 ]
   do
     echo "Por favor introduzca el directorio de archivos maestros y tablas (Si presiona ENTER se creara el Default: $MAESTROS_TABLAS_DIR)"
@@ -81,57 +84,123 @@ function readSubDirectories {
 
   directoresArray=("$DIRCONF" "$EJECUTABLES_DIR" "$MAESTROS_TABLAS_DIR")
 
-  echo "Por favor introduzca el directorio de los arribos (Si presiona ENTER se creara el Default: $ARRIBOS_DIR)" 
-  read -r NEW_DIR
-  if [ ! "$NEW_DIR" == "" ]
-  then
-    ARRIBOS_DIR="$NEW_DIR"
-  fi
+  continueToNextStep=1
+
+  #Arribos
+  while [ ! $continueToNextStep -eq 0 ]
+  do
+    echo "Por favor introduzca el directorio de los arribos (Si presiona ENTER se creara el Default: $ARRIBOS_DIR)" 
+    read -r NEW_DIR
+    checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+    continueToNextStep=$?
+    if [ $continueToNextStep -eq 0 ]
+    then
+      if [ ! "$NEW_DIR" == "" ]
+      then
+        ARRIBOS_DIR="$NEW_DIR"
+      fi
+    fi
+  done
 
   directoresArray=("$DIRCONF" "$EJECUTABLES_DIR" "$MAESTROS_TABLAS_DIR" "$ARRIBOS_DIR")
 
-  echo "Por favor introduzca el directorio de novedades aceptadas (Si presiona ENTER se creara el Default: $NOVEDADES_ACEPTADAS_DIR)"
-  read -r NEW_DIR
-  if [ ! "$NEW_DIR" == "" ]
-  then
-    NOVEDADES_ACEPTADAS_DIR="$NEW_DIR"
-  fi
+  continueToNextStep=1
+
+  #Novedades
+  while [ ! $continueToNextStep -eq 0 ]
+  do
+    echo "Por favor introduzca el directorio de novedades aceptadas (Si presiona ENTER se creara el Default: $NOVEDADES_ACEPTADAS_DIR)"
+    read -r NEW_DIR
+    checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+    continueToNextStep=$?
+    if [ $continueToNextStep -eq 0 ]
+    then
+      if [ ! "$NEW_DIR" == "" ]
+      then
+        NOVEDADES_ACEPTADAS_DIR="$NEW_DIR"
+      fi
+    fi
+  done
 
   directoresArray=("$DIRCONF" "$EJECUTABLES_DIR" "$MAESTROS_TABLAS_DIR" "$ARRIBOS_DIR" "$NOVEDADES_ACEPTADAS_DIR")
 
-  echo "Por favor introduzca el directorio de rechazados (Si presiona ENTER se creara el Default: $RECHAZADOS_DIR)"
-  read -r NEW_DIR
-  if [ ! "$NEW_DIR" == "" ]
-  then
-    RECHAZADOS_DIR="$NEW_DIR"
-  fi
+  continueToNextStep=1
+
+  #Rechazados
+  while [ ! $continueToNextStep -eq 0 ]
+  do
+    echo "Por favor introduzca el directorio de rechazados (Si presiona ENTER se creara el Default: $RECHAZADOS_DIR)"
+    read -r NEW_DIR
+    checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+    continueToNextStep=$?
+    if [ $continueToNextStep -eq 0 ]
+    then
+      if [ ! "$NEW_DIR" == "" ]
+      then
+        RECHAZADOS_DIR="$NEW_DIR"
+      fi
+    fi
+  done
 
   directoresArray=("$DIRCONF" "$EJECUTABLES_DIR" "$MAESTROS_TABLAS_DIR" "$ARRIBOS_DIR" "$NOVEDADES_ACEPTADAS_DIR" "$RECHAZADOS_DIR")
 
-  echo "Por favor introduzca el directorio de procesados (Si presiona ENTER se creara el Default: $PROCESADOS_DIR)"
-  read -r NEW_DIR
-  if [ ! "$NEW_DIR" == "" ]
-  then
-    PROCESADOS_DIR="$NEW_DIR"
-  fi
+  continueToNextStep=1
+
+  #Procesados
+  while [ ! $continueToNextStep -eq 0 ]
+  do
+    echo "Por favor introduzca el directorio de procesados (Si presiona ENTER se creara el Default: $PROCESADOS_DIR)"
+    read -r NEW_DIR
+    checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+    continueToNextStep=$?
+    if [ $continueToNextStep -eq 0 ]
+    then
+      if [ ! "$NEW_DIR" == "" ]
+      then
+        PROCESADOS_DIR="$NEW_DIR"
+      fi
+    fi
+  done
 
   directoresArray=("$DIRCONF" "$EJECUTABLES_DIR" "$MAESTROS_TABLAS_DIR" "$ARRIBOS_DIR" "$NOVEDADES_ACEPTADAS_DIR" "$RECHAZADOS_DIR" "$PROCESADOS_DIR")
 
-  echo "Por favor introduzca el directorio de reportes (Si presiona ENTER se creara el Default: $REPORTES_DIR)"
-  read -r NEW_DIR
-  if [ ! "$NEW_DIR" == "" ]
-  then
-    REPORTES_DIR="$NEW_DIR"
-  fi
+  continueToNextStep=1
+
+  #Reportes
+  while [ ! $continueToNextStep -eq 0 ]
+  do
+    echo "Por favor introduzca el directorio de reportes (Si presiona ENTER se creara el Default: $REPORTES_DIR)"
+    read -r NEW_DIR
+    checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+    continueToNextStep=$?
+    if [ $continueToNextStep -eq 0 ]
+    then
+      if [ ! "$NEW_DIR" == "" ]
+      then
+        REPORTES_DIR="$NEW_DIR"
+      fi
+    fi
+  done
 
   directoresArray=("$DIRCONF" "$EJECUTABLES_DIR" "$MAESTROS_TABLAS_DIR" "$ARRIBOS_DIR" "$NOVEDADES_ACEPTADAS_DIR" "$RECHAZADOS_DIR" "$PROCESADOS_DIR" "$REPORTES_DIR")
 
-  echo "Por favor introduzca el directorio de command logs (Si presiona ENTER se creara el Default: $COMANDOS_LOGS_DIR)"
-  read -r NEW_DIR
-  if [ ! "$NEW_DIR" == "" ]
-  then
-    COMANDOS_LOGS_DIR="$NEW_DIR"
-  fi
+  continueToNextStep=1
+
+  #Command Logs
+  while [ ! $continueToNextStep -eq 0 ]
+  do
+    echo "Por favor introduzca el directorio de command logs (Si presiona ENTER se creara el Default: $COMANDOS_LOGS_DIR)"
+    read -r NEW_DIR
+    checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
+    continueToNextStep=$?
+    if [ $continueToNextStep -eq 0 ]
+    then
+      if [ ! "$NEW_DIR" == "" ]
+      then
+        COMANDOS_LOGS_DIR="$NEW_DIR"
+      fi
+    fi
+  done
 
   directoresArray=("$DIRCONF" "$EJECUTABLES_DIR" "$MAESTROS_TABLAS_DIR" "$ARRIBOS_DIR" "NOVEDADES_ACEPTADAS_DIR" "$RECHAZADOS_DIR" "$PROCESADOS_DIR" "$REPORTES_DIR" "$COMANDOS_LOGS_DIR")
 
