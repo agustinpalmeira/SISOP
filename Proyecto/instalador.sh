@@ -202,7 +202,7 @@ function readSubDirectories {
     fi
   done
 
-  directoresArray=("$DIRCONF" "$EJECUTABLES_DIR" "$MAESTROS_TABLAS_DIR" "$ARRIBOS_DIR" "NOVEDADES_ACEPTADAS_DIR" "$RECHAZADOS_DIR" "$PROCESADOS_DIR" "$REPORTES_DIR" "$COMANDOS_LOGS_DIR")
+  directoresArray=("$DIRCONF" "$EJECUTABLES_DIR" "$MAESTROS_TABLAS_DIR" "$ARRIBOS_DIR" "$NOVEDADES_ACEPTADAS_DIR" "$RECHAZADOS_DIR" "$PROCESADOS_DIR" "$REPORTES_DIR" "$COMANDOS_LOGS_DIR")
 
   echo ${directoresArray[@]}
 }
@@ -217,20 +217,20 @@ function createSubDirectories {
   mkdir -p "$GRUPO/$PROCESADOS_DIR"
   mkdir -p "$GRUPO/$REPORTES_DIR"
   mkdir -p "$GRUPO/$COMANDOS_LOGS_DIR"
+  echo "Estado de la instalación: LISTA" 
 }
 
 function showDirectoriesConfiguration {
   echo "TP SO7508 Primer Cuatrimestre 2018. Tema O Copyright © Grupo 03"
   echo "Librería del Sistema: $GRUPO/$DIRCONF"
-  echo "Ejecutables en: $GRUPO/$EJECUTABLES_DIR."
-  echo "Directorio para los archivos maestros: $GRUPO/$MAESTROS_TABLAS_DIR."
-  echo "Directorio para el arribo de archivos externos: $GRUPO/$ARRIBOS_DIR."
-  echo "Directorio para los archivos aceptados: $GRUPO/$NOVEDADES_ACEPTADAS_DIR."
-  echo "Directorio para los archivos rechazados: $GRUPO/$RECHAZADOS_DIR."
-  echo "Directorio para Archivos procesados: $GRUPO/$PROCESADOS_DIR."
-  echo "Directorio para los reportes: $GRUPO/$REPORTES_DIR." 
-  echo "Logs de auditoria del Sistema: $GRUPO/$COMANDOS_LOGS_DIR."
-  echo "Estado de la instalación: LISTA"
+  echo "Ejecutables en: $GRUPO/$EJECUTABLES_DIR"
+  echo "Directorio para los archivos maestros: $GRUPO/$MAESTROS_TABLAS_DIR"
+  echo "Directorio para el arribo de archivos externos: $GRUPO/$ARRIBOS_DIR"
+  echo "Directorio para los archivos aceptados: $GRUPO/$NOVEDADES_ACEPTADAS_DIR"
+  echo "Directorio para los archivos rechazados: $GRUPO/$RECHAZADOS_DIR"
+  echo "Directorio para Archivos procesados: $GRUPO/$PROCESADOS_DIR"
+  echo "Directorio para los reportes: $GRUPO/$REPORTES_DIR"
+  echo "Logs de auditoria del Sistema: $GRUPO/$COMANDOS_LOGS_DIR"
 }
 
 function checkIfDirectoryNameIsInUse {
