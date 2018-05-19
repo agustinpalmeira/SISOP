@@ -27,6 +27,11 @@ function checkPerlVersion {
   fi
 }
 
+function exitScript 
+{
+  exit
+}
+
 function createMainDirectory {
   echo $GRUPO
   mkdir -p "$GRUPO"
@@ -259,13 +264,12 @@ function readSubDirectories {
     fi
   done
 
-  directoresArray=("$DIRCONF" "$EJECUTABLES_DIR" "$MAESTROS_TABLAS_DIR" "$ARRIBOS_DIR" "$NOVEDADES_ACEPTADAS_DIR" "$RECHAZADOS_DIR" "$PROCESADOS_DIR" "$REPORTES_DIR" "$COMANDOS_LOGS_DIR")
+  #directoresArray=("$DIRCONF" "$EJECUTABLES_DIR" "$MAESTROS_TABLAS_DIR" "$ARRIBOS_DIR" "$NOVEDADES_ACEPTADAS_DIR" "$RECHAZADOS_DIR" "$PROCESADOS_DIR" "$REPORTES_DIR" "$COMANDOS_LOGS_DIR")
 
   echo ${directoresArray[@]}
 }
 
 function createSubDirectories {
-  mkdir -p "$GRUPO/$DIRCONF"
   mkdir -p "$GRUPO/$EJECUTABLES_DIR"
   mkdir -p "$GRUPO/$MAESTROS_TABLAS_DIR"
   mkdir -p "$GRUPO/$ARRIBOS_DIR"
@@ -313,6 +317,7 @@ checkPerlVersion
     echo 'La version de Perl es compatible (mayor o igual a la 5.0)'
   else
     echo 'La version de Perl no es compatible (menor a la 5.0)'
+    exitScript
   fi
 
 selectOption
@@ -321,7 +326,7 @@ createMainDirectory
 
 userConfirmation='No'
 
-while [ ! $userConfirmation == 'Si' ]
+while [ ! "$userConfirmation" == 'Si' ]
 do
   readSubDirectories
   showDirectoriesConfiguration
@@ -329,8 +334,16 @@ do
   echo '¿Confirma la instalación? (Si-No): '
   read -r userConfirmation
 
-  if [ $userConfirmation == 'Si' ] ; then
+  if [ "$userConfirmation" == 'Si' ] ; then
     createSubDirectories
+  elif [[ $userConfirmation == 'No' ]]; then
+    echo 'Ingrese los directorios nuevamente.'
+  else 
+    while [ ! "$userConfirmation" == 'Si' ] && [ ! "$userConfirmation" == 'No' ]
+    do
+      echo 'Ingrese una opcion correcta (Si-No).'
+      read -r userConfirmation
+    done
   fi
 done
 
