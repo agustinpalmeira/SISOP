@@ -12,6 +12,7 @@ RECHAZADOS_DIR="RECHAZADOS"               # 5) El directorio donde se depositan 
 PROCESADOS_DIR="PROCESADOS"               # 6) El directorio donde se depositan los archivos procesados 
 REPORTES_DIR="REPORTES"                   # 7) El directorio donde se depositan los reportes
 COMANDOS_LOGS_DIR="LOGS"                  # 8) El directorio donde se depositan los logs de los comandos 
+INSTALL_CONF=$DIRCONF"/instalo.conf"
 
 ### FUNCIONES ###############################################################################################
 
@@ -326,9 +327,37 @@ for f in "*.sh"
   done
 }
 
+function createConfigurationFile 
+{
+  echo "$GRUPO/$DIRCONF"
+  mkdir -p "$GRUPO/$DIRCONF"
+  #Formato: Identificador_del_directorio-Valor-Usuario-Fecha
+  #Se chequea si existe el archivo de log y se crea si no existe.
+  if [ ! -f "$GRUPO/$INSTALL_CONF" ] 
+   then 
+    #Creo archivo de log de la instalación
+    echo "Creando archivo .conf de la instalación..."
+    touch "$GRUPO/$INSTALL_CONF"
+  fi  
+}
+
+function saveDirectoryConfiguration
+{
+  echo "GRUPO=$GRUPO=$(whoami)=$(date)" > $GRUPO/$INSTALL_CONF
+  echo "INSTALL_CONF=$GRUPO/$INSTALL_CONF=$(whoami)=$(date)" >> $GRUPO/$INSTALL_CONF
+  echo "EJECUTABLES_DIR=$GRUPO/$EJECUTABLES_DIR=$(whoami)=$(date)" >> $GRUPO/$INSTALL_CONF
+  echo "MAESTROS_TABLAS_DIR=$GRUPO/$MAESTROS_TABLAS_DIR=$(whoami)=$(date)" >> $GRUPO/$INSTALL_CONF
+  echo "ARRIBOS_DIR=$GRUPO/$ARRIBOS_DIR=$(whoami)=$(date)" >> $GRUPO/$INSTALL_CONF
+  echo "NOVEDADES_ACEPTADAS_DIR=$GRUPO/$NOVEDADES_ACEPTADAS_DIR=$(whoami)=$(date)" >> $GRUPO/$INSTALL_CONF
+  echo "RECHAZADOS_DIR=$GRUPO/$RECHAZADOS_DIR=$(whoami)=$(date)" >> $GRUPO/$INSTALL_CONF
+  echo "PROCESADOS_DIR=$GRUPO/$PROCESADOS_DIR=$(whoami)=$(date)" >> $GRUPO/$INSTALL_CONF
+  echo "REPORTES_DIR=$GRUPO/$REPORTES_DIR=$(whoami)=$(date)" >> $GRUPO/$INSTALL_CONF
+  echo "COMANDOS_LOGS_DIR=$GRUPO/COMANDOS_LOGS_DIR=$(whoami)=$(date)" >> $GRUPO/$INSTALL_CONF
+}
+
 ##############################################################################################################
 ### MAIN PROGRAM #############################################################################################
-
+createConfigurationFile
 checkPerlVersion
   
   if [ $? -eq 0 ] ; then
@@ -366,6 +395,8 @@ done
 moveMastersData
 
 moveExecData
+
+saveDirectoryConfiguration
 
 #if [ $userConfirmation == 'Si' ] ; then
 #  createSubDirectories
