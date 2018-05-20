@@ -308,6 +308,24 @@ function checkIfDirectoryNameIsInUse {
   return 0 # Directory available.
 }
 
+function moveMastersData 
+{
+  echo "Instalando Tablas de Configuración..."
+  for file in "$PWD/install_files/master_files/*.*"
+  do
+    cp $file "$GRUPO/$MAESTROS_TABLAS_DIR/"
+  done
+}
+
+function moveExecData 
+{
+  echo "Instalando Ejecutables..."
+for f in "*.sh"
+  do
+    cp $f "$GRUPO/$EJECUTABLES_DIR/"
+  done
+}
+
 ##############################################################################################################
 ### MAIN PROGRAM #############################################################################################
 
@@ -321,11 +339,9 @@ checkPerlVersion
   fi
 
 selectOption
-
 createMainDirectory
 
 userConfirmation='No'
-
 while [ ! "$userConfirmation" == 'Si' ]
 do
   readSubDirectories
@@ -346,6 +362,10 @@ do
     done
   fi
 done
+
+moveMastersData
+
+moveExecData
 
 #if [ $userConfirmation == 'Si' ] ; then
 #  createSubDirectories
