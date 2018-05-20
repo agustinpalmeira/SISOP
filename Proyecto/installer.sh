@@ -13,6 +13,7 @@ PROCESADOS_DIR="PROCESADOS"               # 6) El directorio donde se depositan 
 REPORTES_DIR="REPORTES"                   # 7) El directorio donde se depositan los reportes
 COMANDOS_LOGS_DIR="LOGS"                  # 8) El directorio donde se depositan los logs de los comandos 
 INSTALL_CONF=$DIRCONF"/instalo.conf"
+INSTALL_LOG=$DIRCONF"/instalo.log"
 
 ### FUNCIONES ###############################################################################################
 
@@ -20,28 +21,27 @@ INSTALL_CONF=$DIRCONF"/instalo.conf"
 function checkPerlVersion {
   if [ $(perl -V:version | grep "='[5-9]" -c) -eq 1 ] || [ $(perl -V:version | grep "='..\." -c) -eq 1] ;
   then
-     echo 'La version de Perl es valida.'
      return 0
   else
-     echo 'La version de Perl no es valida.' 
      return 1
   fi
 }
 
 function exitScript 
 {
-  exit
+  showMessage 'Terminando la ejecucion...' 'INF'
+  exit $1
 }
 
 function createMainDirectory {
-  echo $GRUPO
+  echo "Creando directorio principal $GRUPO..."
   mkdir -p "$GRUPO"
 }
 
 function selectOption
 {
   if  [[ $1 = "-r" ]]; then
-    echo "Reparar instalacion"
+    showMessage "Reparar instalacion..." 'INF'
   fi
 }
 
@@ -54,8 +54,9 @@ function readSubDirectories {
   #Ejecutables
   while [ ! $continueToNextStep -eq 0 ]
   do
-    echo "Por favor introduzca el directorio de ejecutables (Si presiona ENTER se creara el Default: $EJECUTABLES_DIR)"
+    showMessage "Por favor introduzca el directorio de ejecutables (Si presiona ENTER se creara el Default: $EJECUTABLES_DIR)" 'INF'
     read -r NEW_DIR
+    saveToInstallLog 'INF' "El directorio de ejecutables que desea utilizar es: $NEW_DIR"
 
     checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
     continueToNextStep=$?
@@ -64,6 +65,7 @@ function readSubDirectories {
       if [ ! "$NEW_DIR" == "" ]
       then
         EJECUTABLES_DIR="$NEW_DIR"
+        saveToInstallLog 'INF' "El directorio de ejecutables elegido y disponible es: $NEW_DIR"
       fi
     fi
   done
@@ -75,8 +77,9 @@ function readSubDirectories {
   #Maestros
   while [ ! $continueToNextStep -eq 0 ]
   do
-    echo "Por favor introduzca el directorio de archivos maestros y tablas (Si presiona ENTER se creara el Default: $MAESTROS_TABLAS_DIR)"
+    showMessage "Por favor introduzca el directorio de archivos maestros y tablas (Si presiona ENTER se creara el Default: $MAESTROS_TABLAS_DIR)" 'INF'
     read -r NEW_DIR
+    saveToInstallLog 'INF' "El directorio de archivos maestros y tablas que desea utilizar es: $NEW_DIR"
 
     if [ "$NEW_DIR" == "" ]
     then
@@ -92,6 +95,7 @@ function readSubDirectories {
       if [ ! "$NEW_DIR" == "" ]
       then
         MAESTROS_TABLAS_DIR="$NEW_DIR"
+        saveToInstallLog 'INF' "El directorio de archivos maestros y tablas elegido y disponible es: $NEW_DIR"
       fi
     fi
   done
@@ -103,8 +107,9 @@ function readSubDirectories {
   #Arribos
   while [ ! $continueToNextStep -eq 0 ]
   do
-    echo "Por favor introduzca el directorio de los arribos (Si presiona ENTER se creara el Default: $ARRIBOS_DIR)" 
+    showMessage "Por favor introduzca el directorio de los arribos (Si presiona ENTER se creara el Default: $ARRIBOS_DIR)" 'INF'
     read -r NEW_DIR
+    saveToInstallLog 'INF' "El directorio de arribos que desea utilizar es: $NEW_DIR"
 
     if [ "$NEW_DIR" == "" ]
     then
@@ -121,6 +126,7 @@ function readSubDirectories {
       if [ ! "$NEW_DIR" == "" ]
       then
         ARRIBOS_DIR="$NEW_DIR"
+        saveToInstallLog 'INF' "El directorio de arribos elegido y disponible es: $NEW_DIR"
       fi
     fi
   done
@@ -132,8 +138,9 @@ function readSubDirectories {
   #Novedades
   while [ ! $continueToNextStep -eq 0 ]
   do
-    echo "Por favor introduzca el directorio de novedades aceptadas (Si presiona ENTER se creara el Default: $NOVEDADES_ACEPTADAS_DIR)"
+    showMessage "Por favor introduzca el directorio de novedades aceptadas (Si presiona ENTER se creara el Default: $NOVEDADES_ACEPTADAS_DIR)" 'INF'
     read -r NEW_DIR
+    saveToInstallLog 'INF' "El directorio de novedades que desea utilizar es: $NEW_DIR"
 
     if [ "$NEW_DIR" == "" ]
     then
@@ -149,6 +156,7 @@ function readSubDirectories {
       if [ ! "$NEW_DIR" == "" ]
       then
         NOVEDADES_ACEPTADAS_DIR="$NEW_DIR"
+        saveToInstallLog 'INF' "El directorio de novedades elegido y disponible es: $NEW_DIR"
       fi
     fi
   done
@@ -160,8 +168,9 @@ function readSubDirectories {
   #Rechazados
   while [ ! $continueToNextStep -eq 0 ]
   do
-    echo "Por favor introduzca el directorio de rechazados (Si presiona ENTER se creara el Default: $RECHAZADOS_DIR)"
+    showMessage "Por favor introduzca el directorio de rechazados (Si presiona ENTER se creara el Default: $RECHAZADOS_DIR)" 'INF'
     read -r NEW_DIR
+    saveToInstallLog 'INF' "El directorio de rechazados que desea utilizar es: $NEW_DIR"
 
     if [ "$NEW_DIR" == "" ]
     then
@@ -177,6 +186,7 @@ function readSubDirectories {
       if [ ! "$NEW_DIR" == "" ]
       then
         RECHAZADOS_DIR="$NEW_DIR"
+        saveToInstallLog 'INF' "El directorio de rechazados elegido y disponible es: $NEW_DIR"
       fi
     fi
   done
@@ -188,8 +198,9 @@ function readSubDirectories {
   #Procesados
   while [ ! $continueToNextStep -eq 0 ]
   do
-    echo "Por favor introduzca el directorio de procesados (Si presiona ENTER se creara el Default: $PROCESADOS_DIR)"
+    showMessage "Por favor introduzca el directorio de procesados (Si presiona ENTER se creara el Default: $PROCESADOS_DIR)" 'INF'
     read -r NEW_DIR
+    saveToInstallLog 'INF' "El directorio de procesados que desea utilizar es: $NEW_DIR"
 
     if [ "$NEW_DIR" == "" ]
     then
@@ -205,6 +216,7 @@ function readSubDirectories {
       if [ ! "$NEW_DIR" == "" ]
       then
         PROCESADOS_DIR="$NEW_DIR"
+        saveToInstallLog 'INF' "El directorio de procesados elegido y disponible es: $NEW_DIR"
       fi
     fi
   done
@@ -216,8 +228,9 @@ function readSubDirectories {
   #Reportes
   while [ ! $continueToNextStep -eq 0 ]
   do
-    echo "Por favor introduzca el directorio de reportes (Si presiona ENTER se creara el Default: $REPORTES_DIR)"
+    showMessage "Por favor introduzca el directorio de reportes (Si presiona ENTER se creara el Default: $REPORTES_DIR)" 'INF'
     read -r NEW_DIR
+    saveToInstallLog 'INF' "El directorio de reportes que desea utilizar es: $NEW_DIR"
 
     if [ "$NEW_DIR" == "" ]
     then
@@ -233,6 +246,7 @@ function readSubDirectories {
       if [ ! "$NEW_DIR" == "" ]
       then
         REPORTES_DIR="$NEW_DIR"
+        saveToInstallLog 'INF' "El directorio de reportes elegido y disponible es: $NEW_DIR"
       fi
     fi
   done
@@ -244,8 +258,9 @@ function readSubDirectories {
   #Command Logs
   while [ ! $continueToNextStep -eq 0 ]
   do
-    echo "Por favor introduzca el directorio de command logs (Si presiona ENTER se creara el Default: $COMANDOS_LOGS_DIR)"
+    showMessage "Por favor introduzca el directorio de command logs (Si presiona ENTER se creara el Default: $COMANDOS_LOGS_DIR)" 'INF'
     read -r NEW_DIR
+    saveToInstallLog 'INF' "El directorio de command logs que desea utilizar es: $NEW_DIR"
 
     if [ "$NEW_DIR" == "" ]
     then
@@ -261,38 +276,45 @@ function readSubDirectories {
       if [ ! "$NEW_DIR" == "" ]
       then
         COMANDOS_LOGS_DIR="$NEW_DIR"
+        saveToInstallLog 'INF' "El directorio de command logs elegido y disponible es: $NEW_DIR"
       fi
     fi
   done
 
-  #directoresArray=("$DIRCONF" "$EJECUTABLES_DIR" "$MAESTROS_TABLAS_DIR" "$ARRIBOS_DIR" "$NOVEDADES_ACEPTADAS_DIR" "$RECHAZADOS_DIR" "$PROCESADOS_DIR" "$REPORTES_DIR" "$COMANDOS_LOGS_DIR")
-
-  echo ${directoresArray[@]}
+  saveToInstallLog 'INF' "Los nombres de los directorios seleccionados son: ${directoresArray[@]}"
 }
 
 function createSubDirectories {
+  showMessage 'Creando sub directorios...' 'INF'
+  showMessage "Creando sub directorio $GRUPO/$EJECUTABLES_DIR..." 'INF'
   mkdir -p "$GRUPO/$EJECUTABLES_DIR"
+  showMessage "Creando sub directorio $GRUPO/$MAESTROS_TABLAS_DIR..." 'INF'
   mkdir -p "$GRUPO/$MAESTROS_TABLAS_DIR"
+  showMessage "Creando sub directorio $GRUPO/$ARRIBOS_DIR..." 'INF'
   mkdir -p "$GRUPO/$ARRIBOS_DIR"
+  showMessage "Creando sub directorio $GRUPO/$NOVEDADES_ACEPTADAS_DIR..." 'INF'
   mkdir -p "$GRUPO/$NOVEDADES_ACEPTADAS_DIR"
+  showMessage "Creando sub directorio $GRUPO/$RECHAZADOS_DIR..." 'INF'
   mkdir -p "$GRUPO/$RECHAZADOS_DIR"
+  showMessage "Creando sub directorio $GRUPO/$PROCESADOS_DIR..." 'INF'
   mkdir -p "$GRUPO/$PROCESADOS_DIR"
+  showMessage "Creando sub directorio $GRUPO/$REPORTES_DIR..." 'INF'
   mkdir -p "$GRUPO/$REPORTES_DIR"
+  showMessage "Creando sub directorio $GRUPO/$COMANDOS_LOGS_DIR..." 'INF'
   mkdir -p "$GRUPO/$COMANDOS_LOGS_DIR"
-  echo "Estado de la instalación: LISTA" 
 }
 
 function showDirectoriesConfiguration {
-  echo "TP SO7508 Primer Cuatrimestre 2018. Tema O Copyright © Grupo 03"
-  echo "Librería del Sistema: $GRUPO/$DIRCONF"
-  echo "Ejecutables en: $GRUPO/$EJECUTABLES_DIR"
-  echo "Directorio para los archivos maestros: $GRUPO/$MAESTROS_TABLAS_DIR"
-  echo "Directorio para el arribo de archivos externos: $GRUPO/$ARRIBOS_DIR"
-  echo "Directorio para los archivos aceptados: $GRUPO/$NOVEDADES_ACEPTADAS_DIR"
-  echo "Directorio para los archivos rechazados: $GRUPO/$RECHAZADOS_DIR"
-  echo "Directorio para Archivos procesados: $GRUPO/$PROCESADOS_DIR"
-  echo "Directorio para los reportes: $GRUPO/$REPORTES_DIR"
-  echo "Logs de auditoria del Sistema: $GRUPO/$COMANDOS_LOGS_DIR"
+  showMessage "TP SO7508 Primer Cuatrimestre 2018. Tema O Copyright © Grupo 03" 'INF'
+  showMessage "Librería del Sistema: $GRUPO/$DIRCONF" 'INF'
+  showMessage "Ejecutables en: $GRUPO/$EJECUTABLES_DIR" 'INF'
+  showMessage "Directorio para los archivos maestros: $GRUPO/$MAESTROS_TABLAS_DIR" 'INF'
+  showMessage "Directorio para el arribo de archivos externos: $GRUPO/$ARRIBOS_DIR" 'INF'
+  showMessage "Directorio para los archivos aceptados: $GRUPO/$NOVEDADES_ACEPTADAS_DIR" 'INF'
+  showMessage "Directorio para los archivos rechazados: $GRUPO/$RECHAZADOS_DIR" 'INF'
+  showMessage "Directorio para Archivos procesados: $GRUPO/$PROCESADOS_DIR" 'INF'
+  showMessage "Directorio para los reportes: $GRUPO/$REPORTES_DIR" 'INF'
+  showMessage "Logs de auditoria del Sistema: $GRUPO/$COMANDOS_LOGS_DIR" 'INF'
 }
 
 function checkIfDirectoryNameIsInUse {
@@ -302,7 +324,7 @@ function checkIfDirectoryNameIsInUse {
     do
       if [ "${!i}" == "${value}" ]
         then
-          echo "El directorio $value ya se encuentra en uso."
+          showMessage "El directorio $value ya se encuentra en uso." 'ALE'
           return 1
       fi
     done
@@ -311,38 +333,65 @@ function checkIfDirectoryNameIsInUse {
 
 function moveMastersData 
 {
-  echo "Instalando Tablas de Configuración..."
+  showMessage 'Instalando Tablas de Configuración...' 'INF'
   for file in "$PWD/install_files/master_files/*.*"
   do
-    mv $file "$GRUPO/$MAESTROS_TABLAS_DIR/"
+    showMessage "Moviendo archivos maestros y tablas..." 'INF'
+    #mv $file "$GRUPO/$MAESTROS_TABLAS_DIR/"
+    echo mover mae
   done
 }
 
 function moveExecData 
 {
-  echo "Instalando Ejecutables..."
+  showMessage "Instalando Ejecutables..." 'INF'
 for f in "*.sh"
   do
-    mv $f "$GRUPO/$EJECUTABLES_DIR/"
+    showMessage "Moviendo archivos ejecutables..." 'INF'
+ #   mv $f "$GRUPO/$EJECUTABLES_DIR/"
+ echo mover ejec
   done
 }
 
-function createConfigurationFile 
+function createConfigurationFile
 {
-  echo "$GRUPO/$DIRCONF"
-  mkdir -p "$GRUPO/$DIRCONF"
+  #Formato: Identificador_del_directorio-Valor-Usuario-Fecha
+  #Se chequea si existe el archivo de config y se crea si no existe.
+  if [ ! -f "$GRUPO/$INSTALL_CONF" ] 
+   then
+    #Creo archivo de log de la instalación
+    showMessage 'Creando archivo .conf de la instalación...' 'INF'
+    touch "$GRUPO/$INSTALL_CONF"
+  fi  
+}
+
+function createCommandsLogFile
+{ #MTodo lo que se muestra al usuario por pantalla y sus respuestas.
   #Formato: Identificador_del_directorio-Valor-Usuario-Fecha
   #Se chequea si existe el archivo de log y se crea si no existe.
-  if [ ! -f "$GRUPO/$INSTALL_CONF" ] 
-   then 
+  if [ ! -f "$GRUPO/$COMANDOS_LOGS_DIR" ] 
+   then
+    #Creo archivo de log de la instalación
+    showMessage 'Creando archivo .log de la instalación...' 'INF'
+    touch "$GRUPO/$COMANDOS_LOGS_DIR"
+  fi  
+}
+
+function createInstallerLogFile 
+{ 
+  #Formato: Identificador_del_directorio-Valor-Usuario-Fecha
+  #Se chequea si existe el archivo de config y se crea si no existe.
+  if [ ! -f "$GRUPO/$INSTALL_LOG" ] 
+   then
     #Creo archivo de log de la instalación
     echo "Creando archivo .conf de la instalación..."
-    touch "$GRUPO/$INSTALL_CONF"
+    touch "$GRUPO/$INSTALL_LOG"
   fi  
 }
 
 function saveDirectoryConfiguration
 {
+  showMessage 'Creating directories...' 'INF'
   echo "GRUPO=$GRUPO=$(whoami)=$(date)" > $GRUPO/$INSTALL_CONF
   echo "INSTALL_CONF=$GRUPO/$INSTALL_CONF=$(whoami)=$(date)" >> $GRUPO/$INSTALL_CONF
   echo "EJECUTABLES_DIR=$GRUPO/$EJECUTABLES_DIR=$(whoami)=$(date)" >> $GRUPO/$INSTALL_CONF
@@ -355,20 +404,39 @@ function saveDirectoryConfiguration
   echo "COMANDOS_LOGS_DIR=$GRUPO/COMANDOS_LOGS_DIR=$(whoami)=$(date)" >> $GRUPO/$INSTALL_CONF
 }
 
+function showMessage 
+{
+  echo "$1"
+  saveToInstallLog "$1" "$2"
+  return 0
+}
+
+function saveToInstallLog
+{ 
+  ./saveToLog.sh "$GRUPO/$INSTALL_LOG" "$2" "$1" #W5: when, who, where, what and why.
+  return 0
+}
+
 ##############################################################################################################
 ### MAIN PROGRAM #############################################################################################
-createConfigurationFile
-checkPerlVersion
-  
+
+createMainDirectory
+
+mkdir -p "$GRUPO/$DIRCONF"
+createInstallerLogFile
+
+showMessage 'Creando directorio para configuracion...' 'ALE'
+createConfigurationFile #Se crea el archivo de configuracion de directorios.
+
+checkPerlVersion  
   if [ $? -eq 0 ] ; then
-    echo 'La version de Perl es compatible (mayor o igual a la 5.0)'
+    showMessage 'La version de Perl es compatible (mayor o igual a la 5.0)' 'INF'
   else
-    echo 'La version de Perl no es compatible (menor a la 5.0)'
+    showMessage 'La version de Perl no es compatible (menor a la 5.0)' 'ERR'
     exitScript
   fi
 
 selectOption
-createMainDirectory
 
 userConfirmation='No'
 while [ ! "$userConfirmation" == 'Si' ]
@@ -376,18 +444,20 @@ do
   readSubDirectories
   showDirectoriesConfiguration
   echo ''
-  echo '¿Confirma la instalación? (Si-No): '
+  showMessage '¿Confirma la instalación? (Si-No): ' 'INF'
   read -r userConfirmation
+  saveToInstallLog 'INF' "La confirmacion de la instalacion fue: $userConfirmation"
 
   if [ "$userConfirmation" == 'Si' ] ; then
     createSubDirectories
   elif [[ $userConfirmation == 'No' ]]; then
-    echo 'Ingrese los directorios nuevamente.'
+    showMessage 'Ingrese los directorios nuevamente.' 'INF'
   else 
     while [ ! "$userConfirmation" == 'Si' ] && [ ! "$userConfirmation" == 'No' ]
     do
-      echo 'Ingrese una opcion correcta (Si-No).'
+      showMessage 'Ingrese una opcion correcta (Si-No).' 'ALE'
       read -r userConfirmation
+      saveToInstallLog 'INF' "La re-confirmacion de la instalacion fue: $userConfirmation"
     done
   fi
 done
@@ -397,6 +467,9 @@ moveMastersData
 moveExecData
 
 saveDirectoryConfiguration
+
+showMessage 'Estado de la instalación: LISTA' 'INF'
+
 
 #if [ $userConfirmation == 'Si' ] ; then
 #  createSubDirectories
