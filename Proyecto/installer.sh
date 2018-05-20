@@ -313,7 +313,7 @@ function moveMastersData
   echo "Instalando Tablas de Configuración..."
   for file in "$PWD/install_files/master_files/*.*"
   do
-    cp $file "$GRUPO/$MAESTROS_TABLAS_DIR/"
+    mv $file "$GRUPO/$MAESTROS_TABLAS_DIR/"
   done
 }
 
@@ -322,7 +322,7 @@ function moveExecData
   echo "Instalando Ejecutables..."
 for f in "*.sh"
   do
-    cp $f "$GRUPO/$EJECUTABLES_DIR/"
+    mv $f "$GRUPO/$EJECUTABLES_DIR/"
   done
 }
 
