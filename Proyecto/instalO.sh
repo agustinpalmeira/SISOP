@@ -437,15 +437,16 @@ function saveToCommandLog
 
 function checkInstallation 
 { 
+# DESCRIPCION: Si el archivo de configuración no existe, el sistema no está instalado, y si existe el sistema está instalado.
 # POST CONDICIONES: 
 # 0: El sistema esta instalado.
 # 1: El sistema no esta instalado.
   if [ -f "$GRUPO/$INSTALL_CONF" ] 
   then
-    showMessage 'El sistema ya esta instalado.'
+    echo 'El sistema ya esta instalado.'
     return 0
   else 
-    showMessage 'El sistema no esta instalado.'
+    echo 'El sistema no esta instalado.'
     return 1
   fi
 }
