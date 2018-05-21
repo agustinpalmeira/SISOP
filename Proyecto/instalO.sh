@@ -66,8 +66,60 @@ function installWithDefaultDirectories
 function repairInstallation
 {
   checkPerlVersionWithMessage
-  createMainDirectoriesAndData
-  createSubDirectories
+
+  if [ ! -d "$GRUPO" ] ; then
+    mkdir -p "$GRUPO"
+  fi
+
+  if [ ! -d "$GRUPO/$DIRCONF" ] ; then
+    mkdir -p "$GRUPO/$DIRCONF"
+  fi
+
+  if [ ! -d "$GRUPO/$EJECUTABLES_DIR" ] ; then 
+    mkdir -p "$GRUPO/$EJECUTABLES_DIR"
+  fi
+
+  if [ ! -d "$GRUPO/$MAESTROS_TABLAS_DIR" ] ; then
+    mkdir -p "$GRUPO/$MAESTROS_TABLAS_DIR"
+  fi
+
+  if [ ! -d "$GRUPO/$ARRIBOS_DIR" ] ; then
+    mkdir -p "$GRUPO/$ARRIBOS_DIR"
+  fi
+
+  if [ ! -d "$GRUPO/$NOVEDADES_ACEPTADAS_DIR" ] ; then
+    mkdir -p "$GRUPO/$NOVEDADES_ACEPTADAS_DIR"
+  fi
+
+  if [ ! -d "$GRUPO/$RECHAZADOS_DIR" ] ; then
+    mkdir -p "$GRUPO/$RECHAZADOS_DIR"
+  fi
+
+  if [ ! -d "$GRUPO/$PROCESADOS_DIR" ] ; then
+    mkdir -p "$GRUPO/$PROCESADOS_DIR"
+  fi
+
+  if [ ! -d "$GRUPO/$REPORTES_DIR" ] ; then
+    mkdir -p "$GRUPO/$REPORTES_DIR"
+  fi
+
+  if [ ! -d "$GRUPO/$COMANDOS_LOGS_DIR" ] ; then
+    mkdir -p "$GRUPO/$COMANDOS_LOGS_DIR"
+  fi
+
+  if [ ! -d "$GRUPO/$COMANDOS_LOGS_DIR" ] ; then
+    mkdir -p "$GRUPO/$COMANDOS_LOGS_DIR"
+  fi
+
+  if [ ! -f "$GRUPO/$COMMAND_LOG" ] ; then
+    touch "$GRUPO/$COMMAND_LOGS_NAME"
+  fi
+
+  if [ ! -f "$GRUPO/$INSTALL_LOG" ] ; then
+    touch "$GRUPO/$INSTALL_LOG"
+  fi
+  
+  showMessage "Reinstalando directorios y archivos..." 'INF'
   showDirectoriesConfiguration
   moveDataToDirectoriesAndSaveConfiguration
 }
@@ -373,8 +425,7 @@ function moveMastersData
   for file in "$PWD/install_files/master_files/*.*"
   do
     showMessage "Moviendo archivos maestros y tablas..." 'INF'
-    #mv $file "$GRUPO/$MAESTROS_TABLAS_DIR/"
-    echo mover mae
+    mv $file "$GRUPO/$MAESTROS_TABLAS_DIR/"
   done
 }
 
@@ -384,8 +435,7 @@ function moveExecData
 for f in "*.sh"
   do
     showMessage "Moviendo archivos ejecutables..." 'INF'
- #   mv $f "$GRUPO/$EJECUTABLES_DIR/"
- echo mover ejec
+    mv $f "$GRUPO/$EJECUTABLES_DIR/"
   done
 }
 
