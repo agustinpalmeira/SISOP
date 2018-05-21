@@ -14,6 +14,7 @@ REPORTES_DIR="REPORTES"                   # 7) El directorio donde se depositan 
 COMANDOS_LOGS_DIR="LOGS"                  # 8) El directorio donde se depositan los logs de los comandos 
 INSTALL_CONF=$DIRCONF"/instalo.conf"
 COMMAND_LOGS_NAME="commandsLogs.log"
+COMMAND_LOG="$COMANDOS_LOGS_DIR/$COMMAND_LOGS_NAME"
 INSTALL_LOG=$DIRCONF"/instalo.log"
 
 ### FUNCIONES ###############################################################################################
@@ -58,6 +59,7 @@ function readSubDirectories {
     showMessage "Por favor introduzca el directorio de ejecutables (Si presiona ENTER se creara el Default: $EJECUTABLES_DIR)" 'INF'
     read -r NEW_DIR
     saveToInstallLog 'INF' "El directorio de ejecutables que desea utilizar es: $NEW_DIR"
+    saveToCommandLog 'INF' "El directorio de ejecutables que desea utilizar es: $NEW_DIR"
 
     checkIfDirectoryNameIsInUse "${directoresArray[@]}" "$NEW_DIR"
     continueToNextStep=$?
@@ -81,6 +83,8 @@ function readSubDirectories {
     showMessage "Por favor introduzca el directorio de archivos maestros y tablas (Si presiona ENTER se creara el Default: $MAESTROS_TABLAS_DIR)" 'INF'
     read -r NEW_DIR
     saveToInstallLog 'INF' "El directorio de archivos maestros y tablas que desea utilizar es: $NEW_DIR"
+    saveToCommandLog 'INF' "El directorio de archivos maestros y tablas que desea utilizar es: $NEW_DIR"
+
 
     if [ "$NEW_DIR" == "" ]
     then
@@ -111,6 +115,7 @@ function readSubDirectories {
     showMessage "Por favor introduzca el directorio de los arribos (Si presiona ENTER se creara el Default: $ARRIBOS_DIR)" 'INF'
     read -r NEW_DIR
     saveToInstallLog 'INF' "El directorio de arribos que desea utilizar es: $NEW_DIR"
+    saveToCommandLog 'INF' "El directorio de arribos que desea utilizar es: $NEW_DIR"
 
     if [ "$NEW_DIR" == "" ]
     then
@@ -142,6 +147,7 @@ function readSubDirectories {
     showMessage "Por favor introduzca el directorio de novedades aceptadas (Si presiona ENTER se creara el Default: $NOVEDADES_ACEPTADAS_DIR)" 'INF'
     read -r NEW_DIR
     saveToInstallLog 'INF' "El directorio de novedades que desea utilizar es: $NEW_DIR"
+    saveToCommandLog 'INF' "El directorio de novedades que desea utilizar es: $NEW_DIR"
 
     if [ "$NEW_DIR" == "" ]
     then
@@ -172,6 +178,7 @@ function readSubDirectories {
     showMessage "Por favor introduzca el directorio de rechazados (Si presiona ENTER se creara el Default: $RECHAZADOS_DIR)" 'INF'
     read -r NEW_DIR
     saveToInstallLog 'INF' "El directorio de rechazados que desea utilizar es: $NEW_DIR"
+    saveToCommandLog 'INF' "El directorio de rechazados que desea utilizar es: $NEW_DIR"
 
     if [ "$NEW_DIR" == "" ]
     then
@@ -202,6 +209,7 @@ function readSubDirectories {
     showMessage "Por favor introduzca el directorio de procesados (Si presiona ENTER se creara el Default: $PROCESADOS_DIR)" 'INF'
     read -r NEW_DIR
     saveToInstallLog 'INF' "El directorio de procesados que desea utilizar es: $NEW_DIR"
+    saveToCommandLog 'INF' "El directorio de procesados que desea utilizar es: $NEW_DIR"
 
     if [ "$NEW_DIR" == "" ]
     then
@@ -232,6 +240,7 @@ function readSubDirectories {
     showMessage "Por favor introduzca el directorio de reportes (Si presiona ENTER se creara el Default: $REPORTES_DIR)" 'INF'
     read -r NEW_DIR
     saveToInstallLog 'INF' "El directorio de reportes que desea utilizar es: $NEW_DIR"
+    saveToCommandLog 'INF' "El directorio de reportes que desea utilizar es: $NEW_DIR"
 
     if [ "$NEW_DIR" == "" ]
     then
@@ -262,6 +271,7 @@ function readSubDirectories {
     showMessage "Por favor introduzca el directorio de command logs (Si presiona ENTER se creara el Default: $COMANDOS_LOGS_DIR)" 'INF'
     read -r NEW_DIR
     saveToInstallLog 'INF' "El directorio de command logs que desea utilizar es: $NEW_DIR"
+    saveToCommandLog 'INF' "El directorio de command que desea utilizar es: $NEW_DIR"
 
     if [ "$NEW_DIR" == "" ]
     then
@@ -408,6 +418,7 @@ function saveDirectoryConfiguration
 function showMessage 
 {
   echo "$1"
+  saveToCommandLog "$1" "$2"
   saveToInstallLog "$1" "$2"
   return 0
 }
@@ -415,6 +426,12 @@ function showMessage
 function saveToInstallLog
 { 
   ./saveToLog.sh "$GRUPO/$INSTALL_LOG" "$2" "$1" #W5: when, who, where, what and why.
+  return 0
+}
+
+function saveToCommandLog
+{ 
+  ./saveToLog.sh "$GRUPO/$COMMAND_LOGS_NAME" "$2" "$1" #W5: when, who, where, what and why.
   return 0
 }
 
@@ -451,6 +468,7 @@ do
   showMessage '¿Confirma la instalación? (Si-No): ' 'INF'
   read -r userConfirmation
   saveToInstallLog 'INF' "La confirmacion de la instalacion fue: $userConfirmation"
+  saveToCommandLog 'INF' "La re-confirmacion de la instalacion fue: $userConfirmation"
 
   if [ "$userConfirmation" == 'Si' ] ; then
     createSubDirectories
@@ -462,6 +480,7 @@ do
       showMessage 'Ingrese una opcion correcta (Si-No).' 'ALE'
       read -r userConfirmation
       saveToInstallLog 'INF' "La re-confirmacion de la instalacion fue: $userConfirmation"
+      saveToCommandLog 'INF' "La re-confirmacion de la instalacion fue: $userConfirmation"
     done
   fi
 done
@@ -473,14 +492,8 @@ moveExecData
 saveDirectoryConfiguration
 
 saveToInstallLog 'INF' "Moviendo .log de comandos a: $GRUPO/$COMANDOS_LOGS_DIR"
-mv "$GRUPO/$COMMAND_LOGS_NAME" "$GRUPO/$COMANDOS_LOGS_DIR"
-
 showMessage 'Estado de la instalación: LISTA' 'INF'
 
-#if [ $userConfirmation == 'Si' ] ; then
-#  createSubDirectories
-#elif [ "$confirma" == "No" ] ; then
-
-
+mv "$GRUPO/$COMMAND_LOGS_NAME" "$GRUPO/$COMANDOS_LOGS_DIR"
 
 ##############################################################################################################
