@@ -435,8 +435,29 @@ function saveToCommandLog
   return 0
 }
 
+function checkInstallation 
+{ 
+# POST CONDICIONES: 
+# 0: El sistema esta instalado.
+# 1: El sistema no esta instalado.
+  if [ -f "$GRUPO/$INSTALL_CONF" ] 
+  then
+    showMessage 'El sistema ya esta instalado.'
+    return 0
+  else 
+    showMessage 'El sistema no esta instalado.'
+    return 1
+  fi
+}
+
 ##############################################################################################################
 ### MAIN PROGRAM #############################################################################################
+
+checkInstallation
+if [ $? -eq 0 ]
+then
+    exitScript
+fi
 
 createMainDirectory
 
