@@ -52,13 +52,14 @@ function log
             echo "log truncado" >> "$LOG_FILE"
         fi
     fi
-    echo "cycle number $COUNTER: $EVENT" >> "$LOG_FILE"
+    echo "$(date +"%Y-%m-%e %H:%M:%S") - cycle number $COUNTER: $EVENT" >> "$LOG_FILE"
 }
+
 
 function file_name_validate
 {
     declare local FILE_NAME=$1
-    if [ "$FILE_NAME"=~^[A-Z]-[1-9]-201[6-8]-[0-1][0-9]$ ]
+    if [ $(echo "$FILE_NAME" | grep "^[A-Z]-[1-9]-201[6-8]-[0-1][0-9]$") ]
     then
         declare local COUNTRY_SYSTEM=$(echo "$FILE_NAME" | sed 's/^\(.*-.*\)-.*-.*$/\1/')
         declare local YEAR=$(echo "$FILE_NAME" | sed 's/^.*-.*-\(.*\)-.*$/\1/')
@@ -66,6 +67,8 @@ function file_name_validate
         if [ $(grep -c "$COUNTRY_SYSTEM" "$MASTER_CONTRY_SYSTEM") -lt 1 ]
         then
             # convinacion Pais-CodigoSistema no valido
+            MESSAGE="novedad rechazada: $FILE_NAME - convinacion pais y codigo sistema invalido"
+            log "$MESSAGE"
             echo 2
             return 0
         fi
@@ -74,17 +77,23 @@ function file_name_validate
         if [[ "$MONTH" -lt 1 ]] 
         then
             # numero de mes invalido
+            MESSAGE="novedad rechazada: $FILE_NAME - numero de mes invalido"
+            log "$MESSAGE"
             echo 3
             return 0
         fi
         if [ $(date +"%Y") -lt "$YEAR" ] || ([ $(date +"%Y") -eq "$YEAR" ] && [ "$MONTH" -gt $(date +"%m") ])
         then
-            # fecha funtura
+            # fecha futura
+            MESSAGE="novedad rechazada: $FILE_NAME - periodo adelantado"
+            log "$MESSAGE"
             echo 4
             return 0
         fi
     else
         # no cumple con la estructura basica del nombre
+        MESSAGE="novedad rechazada: $FILE_NAME - formato nombre invalido"
+        log "$MESSAGE"
         echo 1
         return 0
     fi
@@ -97,6 +106,8 @@ function file_content_validate
     if [ ! -f "$DIR_ARRIBOS/$FILE_NAME" ]
     then
         # archivo no regular
+        MESSAGE="novedad rechazada: $FILE_NAME - archivo no regular" 
+        log "$MESSAGE"
         echo 1
         return 0
     fi
@@ -104,6 +115,8 @@ function file_content_validate
     if [ -s "$DIR_ARRIBOS/$FILE_NAME" ]
     then
         # archivo vacio
+        MESSAGE="novedad rechazada: $FILE_NAME - archivo vacio" 
+        log "$MESSAGE"
         echo 2
         return 0
     fi
@@ -153,7 +166,6 @@ then
         let COUNTER=COUNTER+1
         if [ "$(ls $DIR_ARRIBOS | wc -l)" -gt 0 ]
         then
-            # log "not empty"
             for FILE in $(ls -1 "$DIR_ARRIBOS") 
             do
                 if [ $(file_name_validate "$FILE") -eq 0 ]
@@ -164,11 +176,9 @@ then
                         log "$FILE aceptado"
                     else
                         move_file "$FILE" "$DIR_ARRIBOS" "$DIR_REJECTED"
-                        log "rechazar contenido invalido"
                     fi
                 else
                         move_file "$FILE" "$DIR_ARRIBOS" "$DIR_REJECTED"
-                        log "rechazar nombre invalido"
                 fi
             done
         fi
