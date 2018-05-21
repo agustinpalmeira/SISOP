@@ -13,6 +13,7 @@ PROCESADOS_DIR="PROCESADOS"               # 6) El directorio donde se depositan 
 REPORTES_DIR="REPORTES"                   # 7) El directorio donde se depositan los reportes
 COMANDOS_LOGS_DIR="LOGS"                  # 8) El directorio donde se depositan los logs de los comandos 
 INSTALL_CONF=$DIRCONF"/instalo.conf"
+COMMAND_LOGS_NAME="commandsLogs.log"
 INSTALL_LOG=$DIRCONF"/instalo.log"
 
 ### FUNCIONES ###############################################################################################
@@ -425,7 +426,10 @@ createMainDirectory
 mkdir -p "$GRUPO/$DIRCONF"
 createInstallerLogFile
 
-showMessage 'Creando directorio para configuracion...' 'ALE'
+showMessage 'Creando archivo de comandos .log...' 'INF'
+touch "$GRUPO/$COMMAND_LOGS_NAME"
+
+showMessage 'Creando directorio para configuracion...' 'INF'
 createConfigurationFile #Se crea el archivo de configuracion de directorios.
 
 checkPerlVersion  
@@ -468,8 +472,10 @@ moveExecData
 
 saveDirectoryConfiguration
 
-showMessage 'Estado de la instalación: LISTA' 'INF'
+saveToInstallLog 'INF' "Moviendo .log de comandos a: $GRUPO/$COMANDOS_LOGS_DIR"
+mv "$GRUPO/$COMMAND_LOGS_NAME" "$GRUPO/$COMANDOS_LOGS_DIR"
 
+showMessage 'Estado de la instalación: LISTA' 'INF'
 
 #if [ $userConfirmation == 'Si' ] ; then
 #  createSubDirectories
