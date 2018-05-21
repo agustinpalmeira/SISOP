@@ -397,7 +397,7 @@ function createInstallerLogFile
     #Creo archivo de log de la instalación
     echo "Creando archivo .conf de la instalación..."
     touch "$GRUPO/$INSTALL_LOG"
-  fi  
+  fi
 }
 
 function saveDirectoryConfiguration
