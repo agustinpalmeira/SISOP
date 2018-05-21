@@ -42,8 +42,9 @@ function createMainDirectory {
 
 function selectOption
 {
-  if  [[ $1 = "-r" ]]; then
-    showMessage "Reparar instalacion..." 'INF'
+  if  [[ "$1" == '-r' ]] 
+  then
+    showMessage "Reparar instalacion..."
   fi
 }
 
@@ -454,6 +455,8 @@ function checkInstallation
 ##############################################################################################################
 ### MAIN PROGRAM #############################################################################################
 
+selectOption "$1"
+
 checkInstallation
 if [ $? -eq 0 ]
 then
@@ -478,8 +481,6 @@ checkPerlVersion
     showMessage 'La version de Perl no es compatible (menor a la 5.0)' 'ERR'
     exitScript
   fi
-
-selectOption
 
 userConfirmation='No'
 while [ ! "$userConfirmation" == 'Si' ]
