@@ -31,7 +31,7 @@ function checkPerlVersion {
 
 function exitScript 
 {
-  showMessage 'Terminando la ejecucion...' 'INF'
+  echo 'Terminando la ejecucion...'
   exit $1
 }
 
@@ -45,7 +45,31 @@ function selectOption
   if  [[ "$1" == '-r' ]] 
   then
     showMessage "Reparar instalacion..."
+    repairInstallation
+    exitScript
+  elif [[ "$1" == '-i' ]]; then
+    installWithDefaultDirectories
+    exitScript
   fi
+}
+
+function installWithDefaultDirectories
+{
+  rm -rf "$GRUPO"
+  checkPerlVersionWithMessage
+  createMainDirectoriesAndData
+  createSubDirectories
+  showDirectoriesConfiguration
+  moveDataToDirectoriesAndSaveConfiguration
+}
+
+function repairInstallation
+{
+  checkPerlVersionWithMessage
+  createMainDirectoriesAndData
+  createSubDirectories
+  showDirectoriesConfiguration
+  moveDataToDirectoriesAndSaveConfiguration
 }
 
 function readSubDirectories {
@@ -452,6 +476,37 @@ function checkInstallation
   fi
 }
 
+function moveDataToDirectoriesAndSaveConfiguration
+{
+  moveMastersData
+  moveExecData
+  saveDirectoryConfiguration
+  saveToInstallLog 'INF' "Moviendo .log de comandos a: $GRUPO/$COMANDOS_LOGS_DIR"
+  showMessage 'Estado de la instalación: LISTA' 'INF'
+  mv "$GRUPO/$COMMAND_LOGS_NAME" "$GRUPO/$COMANDOS_LOGS_DIR"
+}
+
+function createMainDirectoriesAndData
+{
+  createMainDirectory
+  mkdir -p "$GRUPO/$DIRCONF"
+  createInstallerLogFile
+  showMessage 'Creando archivo de comandos .log...' 'INF'
+  touch "$GRUPO/$COMMAND_LOGS_NAME"
+  showMessage 'Creando directorio para configuracion...' 'INF'
+  createConfigurationFile #Se crea el archivo de configuracion de directorios.
+}
+
+function checkPerlVersionWithMessage
+{
+  checkPerlVersion  
+  if [ $? -eq 0 ] ; then
+    echo 'La version de Perl es compatible (mayor o igual a la 5.0)'
+  else
+    echo 'La version de Perl no es compatible (menor a la 5.0)'
+    exitScript
+  fi
+}
 ##############################################################################################################
 ### MAIN PROGRAM #############################################################################################
 
@@ -463,24 +518,8 @@ then
     exitScript
 fi
 
-createMainDirectory
-
-mkdir -p "$GRUPO/$DIRCONF"
-createInstallerLogFile
-
-showMessage 'Creando archivo de comandos .log...' 'INF'
-touch "$GRUPO/$COMMAND_LOGS_NAME"
-
-showMessage 'Creando directorio para configuracion...' 'INF'
-createConfigurationFile #Se crea el archivo de configuracion de directorios.
-
-checkPerlVersion  
-  if [ $? -eq 0 ] ; then
-    showMessage 'La version de Perl es compatible (mayor o igual a la 5.0)' 'INF'
-  else
-    showMessage 'La version de Perl no es compatible (menor a la 5.0)' 'ERR'
-    exitScript
-  fi
+checkPerlVersionWithMessage
+createMainDirectoriesAndData
 
 userConfirmation='No'
 while [ ! "$userConfirmation" == 'Si' ]
@@ -508,15 +547,6 @@ do
   fi
 done
 
-moveMastersData
-
-moveExecData
-
-saveDirectoryConfiguration
-
-saveToInstallLog 'INF' "Moviendo .log de comandos a: $GRUPO/$COMANDOS_LOGS_DIR"
-showMessage 'Estado de la instalación: LISTA' 'INF'
-
-mv "$GRUPO/$COMMAND_LOGS_NAME" "$GRUPO/$COMANDOS_LOGS_DIR"
+moveDataToDirectoriesAndSaveConfiguration
 
 ##############################################################################################################
