@@ -9,9 +9,9 @@ MAESTROS_TABLAS_DIR="MAESTROS"            # 2) El directorio de archivos maestro
 ARRIBOS_DIR="ARRIBOS"                     # 3) El directorio de arribo de archivos externos, es decir, los archivos que remiten las subsidiarias
 NOVEDADES_ACEPTADAS_DIR="NOVEDADES"       # 4) El directorio donde se depositan temporalmente las novedades aceptadas
 RECHAZADOS_DIR="RECHAZADOS"               # 5) El directorio donde se depositan todos los archivos rechazados
-PROCESADOS_DIR="PROCESADOS"               # 6) El directorio donde se depositan los archivos procesados 
+PROCESADOS_DIR="PROCESADOS"               # 6) El directorio donde se depositan los archivos procesados
 REPORTES_DIR="REPORTES"                   # 7) El directorio donde se depositan los reportes
-COMANDOS_LOGS_DIR="LOGS"                  # 8) El directorio donde se depositan los logs de los comandos 
+COMANDOS_LOGS_DIR="LOGS"                  # 8) El directorio donde se depositan los logs de los comandos
 INSTALL_CONF=$DIRCONF"/instalo.conf"
 COMMAND_LOGS_NAME="commandsLogs.log"
 COMMAND_LOG="$COMANDOS_LOGS_DIR/$COMMAND_LOGS_NAME"
@@ -29,7 +29,7 @@ function checkPerlVersion {
   fi
 }
 
-function exitScript 
+function exitScript
 {
   echo 'Terminando la ejecucion...'
   exit $1
@@ -42,7 +42,7 @@ function createMainDirectory {
 
 function selectOption
 {
-  if  [[ "$1" == '-r' ]] 
+  if  [[ "$1" == '-r' ]]
   then
     showMessage "Reparar instalacion..."
     repairInstallation
@@ -75,7 +75,7 @@ function repairInstallation
     mkdir -p "$GRUPO/$DIRCONF"
   fi
 
-  if [ ! -d "$GRUPO/$EJECUTABLES_DIR" ] ; then 
+  if [ ! -d "$GRUPO/$EJECUTABLES_DIR" ] ; then
     mkdir -p "$GRUPO/$EJECUTABLES_DIR"
   fi
 
@@ -102,7 +102,7 @@ function repairInstallation
   if [ ! -d "$GRUPO/$REPORTES_DIR" ] ; then
     mkdir -p "$GRUPO/$REPORTES_DIR"
   fi
-
+  #Se hace dos veces lo mismo?
   if [ ! -d "$GRUPO/$COMANDOS_LOGS_DIR" ] ; then
     mkdir -p "$GRUPO/$COMANDOS_LOGS_DIR"
   fi
@@ -118,7 +118,7 @@ function repairInstallation
   if [ ! -f "$GRUPO/$INSTALL_LOG" ] ; then
     touch "$GRUPO/$INSTALL_LOG"
   fi
-  
+
   showMessage "Reinstalando directorios y archivos..." 'INF'
   showDirectoriesConfiguration
   moveDataToDirectoriesAndSaveConfiguration
@@ -419,7 +419,7 @@ function checkIfDirectoryNameIsInUse {
   return 0 # Directory available.
 }
 
-function moveMastersData 
+function moveMastersData
 {
   showMessage 'Instalando Tablas de Configuración...' 'INF'
   if [[ -f "$PWD/install_files/master_files/*.*" ]]; then
@@ -435,7 +435,7 @@ function moveMastersData
   fi
 }
 
-function moveExecData 
+function moveExecData
 {
 for f in "*.sh"
   do
@@ -448,31 +448,31 @@ function createConfigurationFile
 {
   #Formato: Identificador_del_directorio-Valor-Usuario-Fecha
   #Se chequea si existe el archivo de config y se crea si no existe.
-  if [ ! -f "$GRUPO/$INSTALL_CONF" ] 
+  if [ ! -f "$GRUPO/$INSTALL_CONF" ]
    then
     #Creo archivo de log de la instalación
     showMessage 'Creando archivo .conf de la instalación...' 'INF'
     touch "$GRUPO/$INSTALL_CONF"
-  fi  
+  fi
 }
 
 function createCommandsLogFile
 { #MTodo lo que se muestra al usuario por pantalla y sus respuestas.
   #Formato: Identificador_del_directorio-Valor-Usuario-Fecha
   #Se chequea si existe el archivo de log y se crea si no existe.
-  if [ ! -f "$GRUPO/$COMANDOS_LOGS_DIR" ] 
+  if [ ! -f "$GRUPO/$COMANDOS_LOGS_DIR" ]
    then
     #Creo archivo de log de la instalación
     showMessage 'Creando archivo .log de la instalación...' 'INF'
     touch "$GRUPO/$COMANDOS_LOGS_DIR"
-  fi  
+  fi
 }
 
-function createInstallerLogFile 
-{ 
+function createInstallerLogFile
+{
   #Formato: Identificador_del_directorio-Valor-Usuario-Fecha
   #Se chequea si existe el archivo de config y se crea si no existe.
-  if [ ! -f "$GRUPO/$INSTALL_LOG" ] 
+  if [ ! -f "$GRUPO/$INSTALL_LOG" ]
    then
     #Creo archivo de log de la instalación
     echo "Creando archivo .conf de la instalación..."
@@ -492,10 +492,10 @@ function saveDirectoryConfiguration
   echo "RECHAZADOS_DIR=$GRUPO/$RECHAZADOS_DIR=$(whoami)=$(date)" >> $GRUPO/$INSTALL_CONF
   echo "PROCESADOS_DIR=$GRUPO/$PROCESADOS_DIR=$(whoami)=$(date)" >> $GRUPO/$INSTALL_CONF
   echo "REPORTES_DIR=$GRUPO/$REPORTES_DIR=$(whoami)=$(date)" >> $GRUPO/$INSTALL_CONF
-  echo "COMANDOS_LOGS_DIR=$GRUPO/COMANDOS_LOGS_DIR=$(whoami)=$(date)" >> $GRUPO/$INSTALL_CONF
+  echo "COMANDOS_LOGS_DIR=$GRUPO/$COMANDOS_LOGS_DIR=$(whoami)=$(date)" >> $GRUPO/$INSTALL_CONF
 }
 
-function showMessage 
+function showMessage
 {
   echo "$1"
   saveToCommandLog "$1" "$2"
@@ -504,28 +504,28 @@ function showMessage
 }
 
 function saveToInstallLog
-{ 
+{
   ./saveToLog.sh "$GRUPO/$INSTALL_LOG" "$2" "$1" #W5: when, who, where, what and why.
   return 0
 }
 
 function saveToCommandLog
-{ 
+{
   ./saveToLog.sh "$GRUPO/$COMMAND_LOGS_NAME" "$2" "$1" #W5: when, who, where, what and why.
   return 0
 }
 
-function checkInstallation 
-{ 
+function checkInstallation
+{
 # DESCRIPCION: Si el archivo de configuración no existe, el sistema no está instalado, y si existe el sistema está instalado.
-# POST CONDICIONES: 
+# POST CONDICIONES:
 # 0: El sistema esta instalado.
 # 1: El sistema no esta instalado.
-  if [ -f "$GRUPO/$INSTALL_CONF" ] 
+  if [ -f "$GRUPO/$INSTALL_CONF" ]
   then
     echo 'El sistema ya esta instalado.'
     return 0
-  else 
+  else
     echo 'El sistema no esta instalado.'
     return 1
   fi
@@ -556,7 +556,7 @@ function createMainDirectoriesAndData
 
 function checkPerlVersionWithMessage
 {
-  checkPerlVersion  
+  checkPerlVersion
   if [ $? -eq 0 ] ; then
     echo 'La version de Perl es compatible (mayor o igual a la 5.0)'
   else
@@ -593,7 +593,7 @@ do
     createSubDirectories
   elif [[ $userConfirmation == 'No' ]]; then
     showMessage 'Ingrese los directorios nuevamente.' 'INF'
-  else 
+  else
     while [ ! "$userConfirmation" == 'Si' ] && [ ! "$userConfirmation" == 'No' ]
     do
       showMessage 'Ingrese una opcion correcta (Si-No).' 'ALE'
