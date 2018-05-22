@@ -13,7 +13,7 @@ function environment_validate
     echo 2
     return 0
    fi
-   if [[ -z ${MASTER_CONTRY_SYSTEM} ]]
+   if [[ -z ${PATH_MASTER} ]]
    then
     echo 3
     return 0
@@ -59,12 +59,13 @@ function log
 function file_name_validate
 {
     declare local FILE_NAME=$1
-    if [ $(echo "$FILE_NAME" | grep "^[A-Z]-[1-9]-201[6-8]-[0-1][0-9]$") ]
+    if [ $(echo "$FILE_NAME" | grep -c "^[A-Z]-[1-9]-201[6-8]-[0-1][0-9]$") -gt 0 ]
     then
-        declare local COUNTRY_SYSTEM=$(echo "$FILE_NAME" | sed 's/^\(.*-.*\)-.*-.*$/\1/')
+        declare local COUNTRY=$(echo "$FILE_NAME" | sed 's/^\(.*\)-.*-.*-.*$/\1/')
+        declare local SYSTEM=$(echo "$FILE_NAME" | sed 's/^.*\(-.*\)-.*-.*$/\1/')
         declare local YEAR=$(echo "$FILE_NAME" | sed 's/^.*-.*-\(.*\)-.*$/\1/')
         declare local MONTH=$(echo "$FILE_NAME" | sed 's/^.*-.*-.*-\(.*\)$/\1/')
-        if [ $(grep -c "$COUNTRY_SYSTEM" "$MASTER_CONTRY_SYSTEM") -lt 1 ]
+        if [ $(grep -c "^$COUNTRY-[A-Z,a-z]*-$SYSTEM-" "$PATH_MASTER") -ge 1 ]
         then
             # convinacion Pais-CodigoSistema no valido
             MESSAGE="novedad rechazada: $FILE_NAME - convinacion pais y codigo sistema invalido"
@@ -111,8 +112,7 @@ function file_content_validate
         echo 1
         return 0
     fi
-    # TODO: no toma validacion, revisar
-    if [ -s "$DIR_ARRIBOS/$FILE_NAME" ]
+    if [ ! -s "$DIR_ARRIBOS/$FILE_NAME" ]
     then
         # archivo vacio
         MESSAGE="novedad rechazada: $FILE_NAME - archivo vacio" 
@@ -173,7 +173,7 @@ then
                     if [ $(file_content_validate "$FILE") -eq 0 ]
                     then
                         move_file "$FILE" "$DIR_ARRIBOS" "$DIR_ACCEPTED"
-                        log "$FILE aceptado"
+                        log "'$FILE' aceptado"
                     else
                         move_file "$FILE" "$DIR_ARRIBOS" "$DIR_REJECTED"
                     fi
