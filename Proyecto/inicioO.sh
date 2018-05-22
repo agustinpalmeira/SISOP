@@ -156,16 +156,15 @@ function verificarCorregirPermisos() {
 	EJECUTABLES=$(grep "EJECUTABLES_DIR" $CONFIGURACION | cut -d "=" -f 2)
 	MAESTROS=$(grep "MAESTROS_TABLAS_DIR" $CONFIGURACION | cut -d "=" -f 2)
 
-  for MAESTRO in $MAESTROS
-	do
+	cd "$MAESTROS"
+  for MAESTRO in $(ls -CU) ; do
     verirficarPermisoLectura $MAESTRO
     if [ $? -eq 0 ]; then
       return 0
     fi
   done
-
-  for EJECUTABLE in $EJECUTABLES
-	do
+	cd "$EJECUTABLES"
+  for EJECUTABLE in $(ls -CU) ; do
     verirficarPermisoEjecucion $EJECUTABLE
     if [ $? -eq 0 ]; then
       return 0
