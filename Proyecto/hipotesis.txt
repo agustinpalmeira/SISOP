@@ -1,1 +1,2 @@
 - Si el archivo de configuración no existe, el sistema no está instalado, y si existe el sistema está instalado.
+- La reparación de la instalación utiliza valores default.
