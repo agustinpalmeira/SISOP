@@ -481,10 +481,10 @@ sub filtroPais {
 	# Va a ejecutarse el ciclo, hasta que se ingrese un codigo de país valido
 	while (1) {
 		$cadena = "";
-		print "Ingrese el código de país por el que desea filtrar(vacio para salir): ";
+		print "Ingrese el código de país por el que desea filtrar(q para volver al menú): ";
 		$cadena = <STDIN>;
 		chomp($cadena);
-		if ( ( exists $paises{$cadena} ) || ( $cadena eq "" ) ) {
+		if ( ( exists $paises{$cadena} ) || ( $cadena eq "q" ) ) {
 			last;
 		}
 		else {
@@ -500,10 +500,10 @@ sub filtroSistema {
 	# Va a ejecutarse el ciclo, hasta que se ingrese un codigo de sistema valido
 	while (1) {
 		$cadena = "";
-		print "Ingrese el código de sistema para el país por el que desea filtrar(vacio para omitir): ";
+		print "Ingrese el código de sistema para el país por el que desea filtrar(vacio para omitir, 'q' para volver al menú): ";
 		$cadena = <STDIN>;
 		chomp($cadena);
-		if ( ( exists $sistemas{$pais}{$cadena} ) || ( $cadena eq "" ) ) {
+		if ( ( exists $sistemas{$pais}{$cadena} ) || ( $cadena eq "q" ) || ( $cadena eq "" ) ) {
 			last;
 		}
 		else {
@@ -519,10 +519,13 @@ sub filtroPorcentaje {
 	# Va a ejecutarse el ciclo, hasta que se ingrese un porcentaje valido
 	while (1) {
 		$cadena = "";
-		print "Ingrese el porcentaje de divergencia a considerar(el mismo deberá estar entre 0 y 100): ";
+		print "Ingrese el porcentaje de divergencia a considerar(el mismo deberá estar entre 0 y 100) o q para volver al menú: ";
 		$cadena = <STDIN>;
 		chomp($cadena);
 
+		if  ( $cadena eq "q" ){
+			last;
+		}
 		if( not length $cadena ) {
 			print "Debe ingresar un porcentaje\n";
 			next;
@@ -546,10 +549,13 @@ sub filtroMonto {
 	# Va a ejecutarse el ciclo, hasta que se ingrese un monto valido
 	while (1) {
 		$cadena = "";
-		print "Ingrese el monto de divergencia ( en \$)a considerar(el mismo deberá ser mayor a 0): ";
+		print "Ingrese el monto de divergencia ( en \$)a considerar(el mismo deberá ser mayor a 0) o 'q' para volver al menú: ";
 		$cadena = <STDIN>;
 		chomp($cadena);
 
+		if  ( $cadena eq "q" ){
+			last;
+		}
 		if( not length $cadena ) {
 			print "Debe ingresar un monto\n";
 			next;
@@ -575,10 +581,10 @@ sub filtroRangoPeriodo{
 	while (1) {
 		$cadena = "";
 		print "Ingrese el rango de periodos, el mismo deberá ser del tipo desde-hasta y \n"
-			."sigue el formato de los periodos sera yyyymm(vacio para omitir): ";
+			."sigue el formato de los periodos sera yyyymm(vacio para omitir, q para volver al menú): ";
 		$cadena = <STDIN>;
 		chomp($cadena);
-		if ( ( !&validoPeriodos($cadena) ) || ( $cadena eq "" ) ) {
+		if ( ( !&validoPeriodos($cadena) ) || ( $cadena eq "q" ) || ( $cadena eq "q" ) ) {
 			last;
 		}
 		else {
@@ -635,9 +641,20 @@ sub main {
 		}
 
 		$pais = &filtroPais();
+		if ($pais eq 'q'){
+			next
+		}
+		
 		$sistema = &filtroSistema();
+		if ($sistema eq 'q'){
+			next
+		}
+		
 		$periodos = &filtroRangoPeriodo();
-
+		if ($periodos eq 'q'){
+			next
+		}
+		
 		if ($c){
 			&procesoComparado();
 			&muestroComparado();
@@ -648,6 +665,9 @@ sub main {
 
 		if ($divPor){
 			$porc = &filtroPorcentaje();
+			if ($porc eq 'q'){
+				next
+			}
 			&procesoDivergenciaPorcentaje();
 			&muestroDivergencia();
 			if ($g==1){
@@ -656,6 +676,9 @@ sub main {
 		}
 		if ($divMon){
 			$monto = &filtroMonto();
+			if ($monto eq 'q'){
+				next
+			}
 			&procesoDivergenciaPorcentaje();
 			&muestroDivergencia();
 			if ($g==1){
@@ -666,3 +689,4 @@ sub main {
 
 	exit;
 }
+
