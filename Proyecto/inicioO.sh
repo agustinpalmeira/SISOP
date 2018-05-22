@@ -113,7 +113,7 @@ function verificarDirectorios() {
   fi
 	#Inicializamos variables importantes
 	LOGINICIO="$LOGS/inicio.log"
-	DEMONIO="$EJECUTABLES/detectO.sh"
+	DEMONIO="$EJECUTABLES"
 	mostrarLoguearEvento "$LOGINICIO" "INF" "Se pudo verificar la correcta instalacion de los directorios principales."
   return 1
 }
@@ -252,7 +252,8 @@ function arrancarDemonio() {
 		mostrarLoguearEvento "$LOGINICIO" "ALE" "El demonio detectO ya fue lanzado y es identificado con el PID: $DEMONIO_PID"
 		return 0
 	fi
-	sh "$DEMONIO&"
+	cd $DEMONIO
+	./detectO.sh &
 	CANTIDAD_DEMONIOS=$(ps -e | pgrep -c "detectO.")
 	if [ $CANTIDAD_DEMONIOS -eq 0 ]; then
 		mostrarLoguearEvento "$LOGINICIO" "ERR" "El demonio detectO NO fue lanzado."
