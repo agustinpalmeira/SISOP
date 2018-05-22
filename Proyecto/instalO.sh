@@ -422,20 +422,25 @@ function checkIfDirectoryNameIsInUse {
 function moveMastersData 
 {
   showMessage 'Instalando Tablas de Configuración...' 'INF'
-  for file in "$PWD/install_files/master_files/*.*"
-  do
-    showMessage "Moviendo archivos maestros y tablas..." 'INF'
-    mv $file "$GRUPO/$MAESTROS_TABLAS_DIR/"
-  done
+  if [[ -f "$PWD/install_files/master_files/*.*" ]]; then
+    for file in "$PWD/install_files/master_files/*.*"
+    do
+      showMessage "Moviendo archivos maestros y tablas..." 'INF'
+      mv $file "$GRUPO/$MAESTROS_TABLAS_DIR/"
+      return 0
+    done
+  else
+    showMessage "No se encuentran los archivos maestros o tablas..." 'ERR'
+    return 1
+  fi
 }
 
 function moveExecData 
 {
-  showMessage "Instalando Ejecutables..." 'INF'
 for f in "*.sh"
   do
-    showMessage "Moviendo archivos ejecutables..." 'INF'
     mv $f "$GRUPO/$EJECUTABLES_DIR/"
+    return 0
   done
 }
 
@@ -529,10 +534,12 @@ function checkInstallation
 function moveDataToDirectoriesAndSaveConfiguration
 {
   moveMastersData
-  moveExecData
   saveDirectoryConfiguration
   saveToInstallLog 'INF' "Moviendo .log de comandos a: $GRUPO/$COMANDOS_LOGS_DIR"
+  showMessage "Instalando Ejecutables..." 'INF'
+  showMessage "Moviendo archivos ejecutables..." 'INF'
   showMessage 'Estado de la instalación: LISTA' 'INF'
+  moveExecData
   mv "$GRUPO/$COMMAND_LOGS_NAME" "$GRUPO/$COMANDOS_LOGS_DIR"
 }
 
