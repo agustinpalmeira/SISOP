@@ -250,6 +250,7 @@ function arrancarDemonio() {
 	if [ $CANTIDAD_DEMONIOS -eq 1 ]; then
 		DEMONIO_PID=$(pgrep "detectO." | head -n 1)
 		mostrarLoguearEvento "$LOGINICIO" "ALE" "El demonio detectO ya fue lanzado y es identificado con el PID: $DEMONIO_PID"
+		echo "Para detener el proceso detectO.sh, se debe hacer uso del comando stopO.sh o . ./stopO.sh"
 		return 0
 	fi
 	cd $DEMONIO
@@ -261,6 +262,7 @@ function arrancarDemonio() {
 	fi
 	DEMONIO_PID=$!
 	mostrarLoguearEvento "$LOGINICIO" "INF" "El demonio detectO fue lanzado y se identifica con el PID: $DEMONIO_PID."
+	echo "Para detener el proceso detectO.sh, se debe hacer uso del comando stopO.sh o . ./stopO.sh"
 	return 1
 }
 
