@@ -2,11 +2,12 @@
 #
 ########################################################
 #          SSOO Grupo 03 - 2018, 1° Cuatrimestre      #
-#                       Comando ReporO.pl              #
+#                       Comando reporO.pl              #
 ########################################################
 
+use Data::Dumper;
 # Levanto las variables de ambiente.
-if ( !exists $ENV{"MAESTROS_TABLAS_DIR"} ) {
+if ( !exists $ENV{DIR_MASTER} ) {
 	print "El sistema no se halla inicializado.\n";
 	exit;
 }
@@ -14,10 +15,10 @@ if (&validoInstancias) {
 	print "No puede ejecutarse mas de una instancia del InfPro a la vez\n";
 	exit;
 }
-$BINDIR      = $ENV{EJECUTABLES_DIR} . "/";
-$MAEDIR      = $ENV{MAESTROS_TABLAS_DIR} . "/";
-$PROCDIR     = $ENV{PROCESADOS_DIR} . "/";
-$REPODIR     = $ENV{REPORTES_DIR} . "/";
+$BINDIR      = $ENV{DIR_EXECUTE} . "/";
+$MAEDIR      = $ENV{DIR_MASTER} . "/";
+$PROCDIR     = $ENV{DIR_INDICTED} . "/";
+$REPODIR     = $ENV{DIR_REPORTS} . "/";
 
 my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) =
 	localtime(time);
@@ -90,6 +91,7 @@ sub cargoPPI{
 		|| die "No se pudo encontrar el Archivo Maestro Contable de Préstamos Personales Impagos";
 	while (my $row = <$fh>) {
 		chomp $row;
+
 		($pais_id,$sis_id,$ctb_anio,$ctb_mes,$ctb_dia,$ctb_estado,$pres_fe, $pres_id, $pres_ti, $mt_pres, $mt_impago, $mt_inde, $mt_innode, $mt_deb)  = split(";",$row);
 		if ($pais ne $pais_id){
 			next;
@@ -99,18 +101,20 @@ sub cargoPPI{
 		}
 		if ($periodos ne ""){
 			my ($periodoInicial, $periodoFinal) = split("-",$periodos);
-			$auxPeriodo = $ctb_anio.$ctb_mes;
-			if ($auxPeriodo <$periodoInicial or $auxPeriodo >$periodoFinal){
+
+			$auxPeriodo = $ctb_anio.&convNum2Dig($ctb_mes);
+			if ($auxPeriodo lt $periodoInicial or $auxPeriodo gt $periodoFinal){
 				next;
 			}
 		}
+		if ($sistemas{$pais_id}{$sis_id}{sep_dec} eq ','){
+			$mt_pres  =~ s/\,/./g;
+			$mt_impago  =~ s/\,/./g;
+			$mt_inde  =~ s/\,/./g;
+			$mt_innode  =~ s/\,/./g;
+			$mt_deb  =~ s/\,/./g;
+		}
 
-
-		$mt_pres  =~ "s/$sistemas{$pais_id}{$sis_id}{sep_dec}/./";
-		$mt_impago  =~ "s/$sistemas{$pais_id}{$sis_id}{sep_dec}/./";
-		$mt_inde  =~ "s/$sistemas{$pais_id}{$sis_id}{sep_dec}/./";
-		$mt_innode  =~ "s/$sistemas{$pais_id}{$sis_id}{sep_dec}/./";
-		$mt_deb  =~ "s/$sistemas{$pais_id}{$sis_id}{sep_dec}/./";
 		$prestamosImpagos{$pres_id}{sis_id} = $sis_id;
 		$prestamosImpagos{$pres_id}{ctb_anio} = $ctb_anio;
 		$prestamosImpagos{$pres_id}{ctb_mes} = $ctb_mes;
@@ -118,12 +122,12 @@ sub cargoPPI{
 		$prestamosImpagos{$pres_id}{ctb_estado} = $ctb_estado;
 		$prestamosImpagos{$pres_id}{pres_fe} = $pres_fe;
 		$prestamosImpagos{$pres_id}{pres_ti} = $pres_ti;
-		$prestamosImpagos{$pres_id}{mt_pres} = $mt_pres;
-		$prestamosImpagos{$pres_id}{mt_impago} = $mt_impago;
-		$prestamosImpagos{$pres_id}{mt_inde} = $mt_inde;
-		$prestamosImpagos{$pres_id}{mt_innode} = $mt_innode;
-		$prestamosImpagos{$pres_id}{mt_deb} = $mt_deb;
-		$prestamosImpagos{$pres_id}{mt_res} = $mt_pres+$mt_impago+$mt_inde+$mt_innode-$mt_deb;
+		$prestamosImpagos{$pres_id}{mt_pres} = sprintf("%.2f",$mt_pres);
+		$prestamosImpagos{$pres_id}{mt_impago} = sprintf("%.2f",$mt_impago);
+		$prestamosImpagos{$pres_id}{mt_inde} = sprintf("%.2f",$mt_inde);
+		$prestamosImpagos{$pres_id}{mt_innode} = sprintf("%.2f",$mt_innode);
+		$prestamosImpagos{$pres_id}{mt_deb} = sprintf("%.2f",$mt_deb);
+		$prestamosImpagos{$pres_id}{mt_res} = sprintf("%.2f",$mt_pres+$mt_impago+$mt_inde+$mt_innode-$mt_deb);
 	}
 	close($fh);
 	return %prestamosImpagos;
@@ -139,38 +143,54 @@ sub cargoPrestamos{
 		if ($sistema!=0 and $sistema != $regTemp[0]){
 			next;
 		}
+		if ($periodos ne ""){
+			my ($periodoInicial, $periodoFinal) = split("-",$periodos);
+			$auxPeriodo = $regTemp[1].&convNum2Dig($regTemp[2]);
+			if ($auxPeriodo lt $periodoInicial or $auxPeriodo gt $periodoFinal){
+				next;
+			}
+		}
 		$auxFecha = $regTemp[14];
 		$auxFecha  =~ s|(\d{2})/(\d{2})/(\d{4})|$3$2$1|;
-		$regTemp[6]  =~ "s/$sistemas{$pais_id}{$sis_id}{sep_dec}/./";
-		$regTemp[7]  =~ "s/$sistemas{$pais_id}{$sis_id}{sep_dec}/./";
-		$regTemp[8]  =~ "s/$sistemas{$pais_id}{$sis_id}{sep_dec}/./";
-		$regTemp[9]  =~ "s/$sistemas{$pais_id}{$sis_id}{sep_dec}/./";
-		$regTemp[10]  =~ "s/$sistemas{$pais_id}{$sis_id}{sep_dec}/./";
-		$regTemp[11]  =~ "s/$sistemas{$pais_id}{$sis_id}{sep_dec}/./";
+
+		$mt_pres = sprintf("%.2f",$regTemp[6]);
+		$mt_impago = sprintf("%.2f",$regTemp[7]);
+		$mt_inde = sprintf("%.2f",$regTemp[8]);
+		$mt_innode = sprintf("%.2f",$regTemp[9]);
+		$mt_deb = sprintf("%.2f",$regTemp[10]);
+		$mt_res = sprintf("%.2f",$regTemp[11]);
+		if ($sistemas{$pais_id}{$regTemp[0]}{sep_dec} eq ','){
+			$mt_pres   =~ s/\,/./g;
+			$mt_inde  =~ s/\,/./g;
+			$mt_impago  =~ s/\,/./g;
+			$mt_innode  =~ s/\,/./g;
+			$mt_deb  =~ s/\,/./g;
+			$mt_res   =~ s/\,/./g;
+		}
 		if (!exists($prestamos{$regTemp[5]})){
 			$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{sis_id} = $regTemp[0];
 			$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{ctb_dia} = $regTemp[3];
 			$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{ctb_estado} = $regTemp[4];
-			$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_pres} =$regTemp[6];
-			$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_impago} = $regTemp[7];
-			$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_inde} = $regTemp[7];
-			$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_innode} = $regTemp[9];
-			$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_deb} = $regTemp[10];
-			$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_res} = $regTemp[11];
+			$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_pres} =$mt_pres;
+			$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_impago} = $mt_impago;
+			$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_inde} = $mt_inde;
+			$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_innode} = $mt_innode;
+			$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_deb} = $mt_deb;
+			$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_res} = $mt_res;
 			$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{fecha_grabacion} = $auxFecha;
 		} else {
-			$fechaGrabada = $prestamos{$regTemp[5]}{ctb_dia}.$prestamos{$regTemp[5]}{fecha_grabacion};
-			$fechaRegistro =  $regTemp[3].$auxFecha;
+			$fechaGrabada = &convNum2Dig($prestamos{$regTemp[5]}{ctb_dia}).$prestamos{$regTemp[5]}{fecha_grabacion};
+			$fechaRegistro =  &convNum2Dig($regTemp[3]).$auxFecha;
 			if ($fechaRegistro gt $fechaGrabada){
 				$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{sis_id} = $regTemp[0];
 				$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{ctb_dia} = $regTemp[3];
 				$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{ctb_estado} = $regTemp[4];
-				$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_pres} =$regTemp[6];
-				$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_impago} = $regTemp[7];
-				$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_inde} = $regTemp[7];
-				$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_innode} = $regTemp[9];
-				$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_deb} = $regTemp[10];
-				$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_res} = $regTemp[11];
+				$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_pres} =$mt_pres;
+				$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_impago} = $mt_impago;
+				$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_inde} = $mt_inde;
+				$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_innode} = $mt_innode;
+				$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_deb} = $mt_deb;
+				$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{mt_res} = $mt_res;
 				$prestamos{$regTemp[5]}{$regTemp[1]}{$regTemp[2]}{fecha_grabacion} = $auxFecha;
 			}
 		}
@@ -183,7 +203,6 @@ sub cargoPrestamos{
 sub procesoComparado{
 	%ppi = &cargoPPI();
 	%prestamos = &cargoPrestamos();
-
 	foreach $pres_id(keys(%ppi)){
 		if (!exists($prestamos{$pres_id}{$ppi{$pres_id}{ctb_anio}}{$ppi{$pres_id}{ctb_mes}})){
 			next;
@@ -203,7 +222,7 @@ sub procesoComparado{
 		$regAux[5] = $prestamos{$pres_id}{$ppi{$pres_id}{ctb_anio}}{$ppi{$pres_id}{ctb_mes}}{ctb_estado};
 		$regAux[6] = $ppi{$pres_id}{mt_res};
 		$regAux[7] = $prestamos{$pres_id}{$ppi{$pres_id}{ctb_anio}}{$ppi{$pres_id}{ctb_mes}}{mt_res};
-		$regAux[8] = $regAux[6]-$regAux[7];
+		$regAux[8] = $regAux[6] - $regAux[7];
 		$regAux[9] = $ppi{$pres_id}{ctb_anio};
 		$regAux[10] = $ppi{$pres_id}{ctb_mes};
 		$regAux[11] = $ppi{$pres_id}{ctb_dia};
@@ -212,22 +231,24 @@ sub procesoComparado{
 	}
 	return @comparado;
 }
+
 # Escribo a disco las comparaciones realizadas para los parametros indicados.
 sub escriboComparado{
 	my $nombreArchivo = "comparado.$pais";
 	my $crearArchivo = 0;
-	if ( !&existeArchivoComparado($nombreArchivo) ) {
+	if ( !&existeComparado($nombreArchivo) ) {
 		$crearArchivo = 1;
 	}
 	open( ARCH, ">$REPODIR" . $nombreArchivo );
 	#Si el archivo no existe, imprimo la fila de encabezados, sino se añade al archivo
 	#existente
 	if ($crearArchivo){
+
 		my $filaEncabezado = "Código de País;Código de Sistema;"
-			."Código Préstamo;RECOMENDACIÓN (calculado en este proceso);"
+			."Código Préstamo;RECOMENDACIÓN;"
 			."Estado contable maestro;Estado contable préstamo;"
-			."Monto Restante Maestro (calculado en este proceso);"
-			."Monto Restante préstamo;Diferencia en \$ (Monto Restante Maestro- Monto Restante préstamo);"
+			."Monto Restante Maestro;"
+			."Monto Restante préstamo;Diferencia en \$;"
 			."Año contable;Mes contable;Día contable maestro;Día contable préstamo\n";
 		print ARCH $filaEncabezado;
 	}
@@ -239,11 +260,12 @@ sub escriboComparado{
 }
 # Muestro por pantalla las comparaciones realizadas para los parametros indicados.
 sub muestroComparado{
+
 	my $filaEncabezado = "Código de País;Código de Sistema;"
-		."Código Préstamo;RECOMENDACIÓN (calculado en este proceso);"
+		."Código Préstamo;RECOMENDACIÓN;"
 		."Estado contable maestro;Estado contable préstamo;"
-		."Monto Restante Maestro (calculado en este proceso);"
-		."Monto Restante préstamo;Diferencia en \$ (Monto Restante Maestro- Monto Restante préstamo);"
+		."Monto Restante Maestro;"
+		."Monto Restante préstamo;Diferencia en \$;"
 		."Año contable;Mes contable;Día contable maestro;Día contable préstamo\n";
 	print  $filaEncabezado;
 
@@ -257,7 +279,6 @@ sub muestroComparado{
 # el porcentaje indicado.
 # retorna: lista de filas de resultados
 sub procesoDivergenciaPorcentaje{
-	my @divergencia;
 
 	open( my $fh,"<:crlf", $REPODIR . "comparado.".$pais )
 		|| return @divergencia;
@@ -265,19 +286,23 @@ sub procesoDivergenciaPorcentaje{
 		chomp $row;
 		@regTemp = split(";", $row);
 		my @regAux;
-		$divPorc = abs(($regTemp[8]/$regTemp[6])*100);
-		if ($porc<$divPorc){
-			next;
+		if ($regTemp[6]!=0){
+			$divPorc =  sprintf ("%.2f",abs(($regTemp[8]/$regTemp[6])*100))	;
+			if ($divPorc>$porc){
+				next;
+			}
+		} else {
+			$divPorc = 0;
 		}
 		$divAbs  = abs($regTemp[8]);
 		$regAux[0] = $regTemp[0];
 		$regAux[1] = $regTemp[1];
 		$regAux[2] = $regTemp[2];
 		$regAux[3] = $regTemp[3];
-		$regAux[6] = $regTemp[6];
-		$regAux[7] = $regTemp[7];
-		$regAux[8] = $divPorc;
-		$regAux[9] = $divAbs;
+		$regAux[4] = $regTemp[6];
+		$regAux[5] = $regTemp[7];
+		$regAux[7] = $divPorc;
+		$regAux[6] = $divAbs;
 		$auxFila = join(";",@regAux);
 		push(@divergencia,$auxFila);
 	}
@@ -287,7 +312,6 @@ sub procesoDivergenciaPorcentaje{
 # el monto indicado.
 # retorna: lista de filas de resultados
 sub procesoDivergenciaMonto{
-	my @divergencia;
 
 	open( my $fh,"<:crlf", $REPODIR . "comparado.".$pais )
 		|| return @divergencia;
@@ -295,19 +319,23 @@ sub procesoDivergenciaMonto{
 		chomp $row;
 		@regTemp = split(";", $row);
 		my @regAux;
-		$divAbs  = abs($regTemp[8]);
-		if ($monto<$divAbs){
+		$divAbs  = sprintf ("%.2f",abs($regTemp[8]));
+		if ($divAbs>$monto){
 			next;
 		}
-		$divPorc = abs(($regTemp[8]/$regTemp[6])*100);
+		if ($regTemp[6]!=0){
+			$divPorc =  sprintf ("%.2f",abs(($regTemp[8]/$regTemp[6])*100))	;
+		} else {
+			$divPorc = 0;
+		}
 		$regAux[0] = $regTemp[0];
 		$regAux[1] = $regTemp[1];
 		$regAux[2] = $regTemp[2];
 		$regAux[3] = $regTemp[3];
-		$regAux[6] = $regTemp[6];
-		$regAux[7] = $regTemp[7];
-		$regAux[8] = $divPorc;
-		$regAux[9] = $divAbs;
+		$regAux[4] = $regTemp[6];
+		$regAux[5] = $regTemp[7];
+		$regAux[7] = $divPorc;
+		$regAux[6] = $divAbs;
 		$auxFila = join(";",@regAux);
 		push(@divergencia,$auxFila);
 	}
@@ -342,6 +370,17 @@ sub convNumInf {
 	}
 	$retval = $temp;
 }
+sub convNum2Dig{
+	my ($temp);
+	my ($val) = @_;
+	if ( $val < 10 ) {
+		$temp = sprintf "0%1.0f", $val;
+	}
+	else {
+		$temp = sprintf "%2.0f", $val;
+	}
+	$retval = $temp;
+}
 # Escribo a disco el listado de divergencias dentro de los parametros indicados
 sub escriboDivergencia{
 	my $nombreArchivo = &proxNomResu();
@@ -349,7 +388,7 @@ sub escriboDivergencia{
 	my $filaEncabezado = "Código de País;Código de Sistema;"
 		."Código Préstamo;RECOMENDACIÓN;"
 		."Monto Restante Maestro;"
-		."Monto Restante préstamo;Diferencia en \$;Diferencia en %;";
+		."Monto Restante préstamo;Diferencia en \$;Diferencia en %;\n";
 	print ARCH $filaEncabezado;
 	foreach $filaDiv ( @divergencia ) {
 		print ARCH $filaDiv."\n";
@@ -362,7 +401,7 @@ sub muestroDivergencia{
 	my $filaEncabezado = "Código de País;Código de Sistema;"
 		."Código Préstamo;RECOMENDACIÓN;"
 		."Monto Restante Maestro;"
-		."Monto Restante préstamo;Diferencia en \$;Diferencia en %;";
+		."Monto Restante préstamo;Diferencia en \$;Diferencia en %;\n";
 	print  $filaEncabezado;
 
 	foreach $filaDiv ( @divergencia ) {
@@ -438,6 +477,9 @@ sub procesoArgumentos() {
 # Si es un rango, valido las dos fechas
 sub validoPeriodos{
 	my (@periodos) = split('-',$_[0]);
+	if ($_[0] eq ''){
+		return 0;
+	}
 	if (@periodos != 2){
 		print "Rango de periodos inválido\n";
 		return 1;
@@ -457,6 +499,15 @@ sub validoPeriodos{
 		}
 	}
 	return 0;
+}
+
+# Chequeo si existe el archivo de comparaciones para el país seleccionado
+sub existeComparado{
+	if (-e $REPODIR."comparado.".$pais) {
+		return 1;
+	} else {
+		return 0;
+	}
 }
 # Valido si un periodo ingresado esta en el formato valido( yyyymm)
 sub validoPeriodo{
@@ -584,7 +635,7 @@ sub filtroRangoPeriodo{
 			."sigue el formato de los periodos sera yyyymm(vacio para omitir, q para volver al menú): ";
 		$cadena = <STDIN>;
 		chomp($cadena);
-		if ( ( !&validoPeriodos($cadena) ) || ( $cadena eq "q" ) || ( $cadena eq "q" ) ) {
+		if ( ( !&validoPeriodos($cadena) ) || ( $cadena eq "q" ) || ( $cadena eq "" ) ) {
 			last;
 		}
 		else {
@@ -620,6 +671,8 @@ sub main {
 		$porc 			= 0;
 		$monto 			= 0;
 		$periodos 		= "";
+		@comparado = ();
+		@divergencia = ();
 		print "Ingrese la acción a realizar(q para salir, -a para ayuda): ";
 		$cadena = <STDIN>;
 
@@ -634,9 +687,12 @@ sub main {
 			&mostrarAyuda();
 			next();
 		}
-		if ($divPor+$divMon>1){
-			print "No se puede listar por porcentajes y montos al mismo tiempo \n";
+		if ($c+$divPor+$divMon>1){
+			print "No se puede listar el comparado, los porcentajes y/o montos al mismo tiempo \n";
 			$error =1;
+			next;
+		} elsif ($c+$divPor+$divMon==0){
+			print "Parámetro incorrecto. Intente nuevamente\n";
 			next;
 		}
 
@@ -644,18 +700,17 @@ sub main {
 		if ($pais eq 'q'){
 			next
 		}
-		
-		$sistema = &filtroSistema();
-		if ($sistema eq 'q'){
-			next
-		}
-		
-		$periodos = &filtroRangoPeriodo();
-		if ($periodos eq 'q'){
-			next
-		}
-		
+
 		if ($c){
+			$sistema = &filtroSistema();
+			if ($sistema eq 'q'){
+				next
+			}
+
+			$periodos = &filtroRangoPeriodo();
+			if ($periodos eq 'q'){
+				next
+			}
 			&procesoComparado();
 			&muestroComparado();
 			if ($g==1){
@@ -664,6 +719,9 @@ sub main {
 		}
 
 		if ($divPor){
+			if (!&existeComparado()){
+				print "No existe el archivo de comparado para el país ingresado\n";
+			}
 			$porc = &filtroPorcentaje();
 			if ($porc eq 'q'){
 				next
@@ -675,11 +733,14 @@ sub main {
 			}
 		}
 		if ($divMon){
+			if (!&existeComparado()){
+				print "No existe el archivo de comparado para el país ingresado\n";
+			}
 			$monto = &filtroMonto();
 			if ($monto eq 'q'){
 				next
 			}
-			&procesoDivergenciaPorcentaje();
+			&procesoDivergenciaMonto();
 			&muestroDivergencia();
 			if ($g==1){
 				&escriboDivergencia()
