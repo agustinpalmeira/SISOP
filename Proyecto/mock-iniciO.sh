@@ -5,6 +5,7 @@ export PATH_MASTER="$GRUPO/install_files/master_files/p-s.mae"
 export DIR_ACCEPTED="$GRUPO/aceptados/"
 export DIR_REJECTED="$GRUPO/rechazados/"
 export DIR_INDICTED="$GRUPO/procesados"
+export PATH_T1="$GRUPO/install_files/master_files/T1.tab"
 
 ./detectO.sh&
 DAEMON_PID=$!
