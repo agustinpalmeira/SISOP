@@ -11,6 +11,7 @@
 CONFIGURACION="./dirconf/instalo.conf"
 #Una vez que veamos que todos los directorios fueron creados, usaremos estas variables para el logueo de eventos
 LOGINICIO=""
+DEMONIO=""
 
 ### FUNCIONES ###############################################################################################
 
@@ -112,21 +113,21 @@ function verificarDirectorios() {
   fi
 	#Inicializamos variables importantes
 	LOGINICIO="$LOGS/inicio.log"
-
+	DEMONIO="$EJECUTABLES/detectO.sh"
 	mostrarLoguearEvento "$LOGINICIO" "INF" "Se pudo verificar la correcta instalacion de los directorios principales."
   return 1
 }
 
 function verirficarPermisoLectura() {
   ARCHIVO=$1
-  if [-r $ARCHIVO ]; then
+  if [ -r $ARCHIVO ]; then
 		mostrarLoguearEvento "$LOGINICIO" "INF" "Permisos para lectura del archivo $ARCHIVO estaban OK."
 	fi
   if [ ! -r $ARCHIVO ]; then
 		mostrarLoguearEvento "$LOGINICIO" "ALE" "Permisos para lectura del archivo $ARCHIVO seran modificados."
 		chmod +r $ARCHIVO
 		if [ ! -r $ARCHIVO ]; then
-			mostrarLoguearEvento "$LOGINICIO" "ERR" "Permisos para lectura del archivo $ARCHIVO fuereon negados."
+			mostrarLoguearEvento "$LOGINICIO" "ERR" "Permisos para lectura del archivo $ARCHIVO fueron negados."
 			return 0
 		fi
   fi
@@ -135,14 +136,15 @@ function verirficarPermisoLectura() {
 
 function verirficarPermisoEjecucion() {
 	ARCHIVO=$1
-  if [-x $ARCHIVO ]; then
+  if [ -x $ARCHIVO ]; then
 		mostrarLoguearEvento "$LOGINICIO" "INF" "Permisos para escritura del archivo $ARCHIVO estaban OK."
+		return 1
 	fi
   if [ ! -x $ARCHIVO ]; then
 		mostrarLoguearEvento "$LOGINICIO" "ALE" "Permisos para escritura del archivo $ARCHIVO seran modificados."
 		chmod +x $ARCHIVO
 		if [ ! -x $ARCHIVO ]; then
-			mostrarLoguearEvento "$LOGINICIO" "ERR" "Permisos para escritura del archivo $ARCHIVO fuereon negados."
+			mostrarLoguearEvento "$LOGINICIO" "ERR" "Permisos para escritura del archivo $ARCHIVO fueron negados."
 			return 0
 		fi
   fi
@@ -154,16 +156,16 @@ function verificarCorregirPermisos() {
 	EJECUTABLES=$(grep "EJECUTABLES_DIR" $CONFIGURACION | cut -d "=" -f 2)
 	MAESTROS=$(grep "MAESTROS_TABLAS_DIR" $CONFIGURACION | cut -d "=" -f 2)
 
-  cd "$MAESTROS"
-  for MAESTRO in * ; do
+  for MAESTRO in $MAESTROS
+	do
     verirficarPermisoLectura $MAESTRO
     if [ $? -eq 0 ]; then
       return 0
     fi
   done
 
-  cd "$EJECUTABLES"
-  for EJECUTABLE in * ; do
+  for EJECUTABLE in $EJECUTABLES
+	do
     verirficarPermisoEjecucion $EJECUTABLE
     if [ $? -eq 0 ]; then
       return 0
@@ -232,6 +234,9 @@ function setearVariablesDeAmbiente() {
 	export PATH_T1="$GRUPO/install_files/master_files/T1.tab"
 	mostrarLoguearEvento "$LOGINICIO" "INF" "La variable PATH_T1 con valor $PATH_T1 fue seteada."
 
+	export PATH_T2="$GRUPO""install_files/master_files/T2.tab"
+	mostrarLoguearEvento "$LOGINICIO" "INF" "La variable PATH_T2 con valor $PATH_T2 fue seteada."
+
 	export VARIABLES_SETEADAS=1
 	mostrarLoguearEvento "$LOGINICIO" "INF" "La variable VARIABLES_SETEADAS con valor $VARIABLES_SETEADAS fue seteada."
 
@@ -247,7 +252,12 @@ function arrancarDemonio() {
 		mostrarLoguearEvento "$LOGINICIO" "ALE" "El demonio detectO ya fue lanzado y es identificado con el PID: $DEMONIO_PID"
 		return 0
 	fi
-	./detectO.sh&
+	sh "$DEMONIO&"
+	CANTIDAD_DEMONIOS=$(ps -e | pgrep -c "detectO.")
+	if [ $CANTIDAD_DEMONIOS -eq 0 ]; then
+		mostrarLoguearEvento "$LOGINICIO" "ERR" "El demonio detectO NO fue lanzado."
+		return 0
+	fi
 	DEMONIO_PID=$!
 	mostrarLoguearEvento "$LOGINICIO" "INF" "El demonio detectO fue lanzado y se identifica con el PID: $DEMONIO_PID."
 	return 1
