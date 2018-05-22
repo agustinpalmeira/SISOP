@@ -533,11 +533,11 @@ function checkInstallation
 
 function moveDataToDirectoriesAndSaveConfiguration
 {
-  moveMastersData
   saveDirectoryConfiguration
   saveToInstallLog 'INF' "Moviendo .log de comandos a: $GRUPO/$COMANDOS_LOGS_DIR"
   showMessage "Instalando Ejecutables..." 'INF'
   showMessage "Moviendo archivos ejecutables..." 'INF'
+  moveMastersData
   showMessage 'Estado de la instalación: LISTA' 'INF'
   moveExecData
   mv "$GRUPO/$COMMAND_LOGS_NAME" "$GRUPO/$COMANDOS_LOGS_DIR"
