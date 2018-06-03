@@ -139,12 +139,9 @@ function move_file
 
 function start_interpreter
 {
-    if [ $PID_INTERPRETER ]
-    then
-        if [ $(ps -e | grep -c "$PID_INTERPRETER") -gt 0 ]
+    if [ $(pgrep -c "interpretO.sh") -gt 0 ]
         then
             return 0
-        fi
     fi
     if [ $(ls -1 $DIR_ACCEPTED/ | wc -l) -eq 0 ]
     then
