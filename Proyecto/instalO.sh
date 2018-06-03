@@ -422,25 +422,23 @@ function checkIfDirectoryNameIsInUse {
 function moveMastersData
 {
   showMessage 'Instalando Tablas de Configuración...' 'INF'
-  if [[ -f "$PWD/install_files/master_files/*.*" ]]; then
-    for file in "$PWD/install_files/master_files/*.*"
+  for file in "$PWD/install_files/master_files/*"
     do
       showMessage "Moviendo archivos maestros y tablas..." 'INF'
-      mv $file "$GRUPO/$MAESTROS_TABLAS_DIR/"
-      return 0
+      cp $file "$GRUPO/$MAESTROS_TABLAS_DIR/"
     done
-  else
-    showMessage "No se encuentran los archivos maestros o tablas..." 'ERR'
-    return 1
-  fi
 }
 
 function moveExecData
 {
-for f in "*.sh"
+  for f in "*.pl"
   do
     mv $f "$GRUPO/$EJECUTABLES_DIR/"
-    return 0
+  done
+
+  for f in "*.sh"
+  do
+    mv $f "$GRUPO/$EJECUTABLES_DIR/"
   done
 }
 
