@@ -61,21 +61,21 @@ function file_name_validate
     declare local FILE_NAME=$1
     if [ $(echo "$FILE_NAME" | grep -c "^[A-Z]-[1-9]-201[6-8]-[0-1][0-9]$") -gt 0 ]
     then
-        declare local COUNTRY=$(echo "$FILE_NAME" | sed 's/^\(.*\)-.*-.*-.*$/\1/')
-        declare local SYSTEM=$(echo "$FILE_NAME" | sed 's/^.*\(-.*\)-.*-.*$/\1/')
-        declare local YEAR=$(echo "$FILE_NAME" | sed 's/^.*-.*-\(.*\)-.*$/\1/')
-        declare local MONTH=$(echo "$FILE_NAME" | sed 's/^.*-.*-.*-\(.*\)$/\1/')
-        if [ $(grep -c "^$COUNTRY-[A-Z,a-z]*-$SYSTEM-" "$PATH_MASTER") -ge 1 ]
+        declare local COUNTRY=$(echo "$FILE_NAME" | sed 's/^\([^-]*\)-.*/\1/')
+        declare local SYSTEM=$(echo "$FILE_NAME" | sed 's/^[^-]*-\([^-]*\)-.*/\1/')
+        declare local YEAR=$(echo "$FILE_NAME" | sed 's/^[^-]*-[^-]*-\([^-]*\)-.*/\1/')
+        declare local MONTH=$(echo "$FILE_NAME" | sed 's/^[^-]*-[^-]*-[^-]*-\([^-]*\)$/\1/')
+        if [ $(grep -c "^$COUNTRY-[A-Z,a-z]*-$SYSTEM-" "$PATH_MASTER") -lt 1 ]
         then
             # convinacion Pais-CodigoSistema no valido
-            MESSAGE="novedad rechazada: $FILE_NAME - convinacion pais y codigo sistema invalido"
+            MESSAGE="novedad rechazada: $FILE_NAME - combinacion pais y codigo sistema invalido"
             log "$MESSAGE"
             echo 2
             return 0
         fi
         # no hace falta validar el año, ya que solo se admite 2016/2017/2018
         # (esto es porque la fecha no puede superar la actual)
-        if [[ "$MONTH" -lt 1 ]] 
+        if ([ "$MONTH" -lt 1 ] || [ "$MONTH" -gt 12 ])
         then
             # numero de mes invalido
             MESSAGE="novedad rechazada: $FILE_NAME - numero de mes invalido"
@@ -83,7 +83,7 @@ function file_name_validate
             echo 3
             return 0
         fi
-        if [ $(date +"%Y") -lt "$YEAR" ] || ([ $(date +"%Y") -eq "$YEAR" ] && [ "$MONTH" -gt $(date +"%m") ])
+        if  [ $(date +"%Y") -lt "$YEAR" ] || ([ $(date +"%Y") -eq "$YEAR" ] && [ "$MONTH" -gt $(date +"%m") ]) 
         then
             # fecha futura
             MESSAGE="novedad rechazada: $FILE_NAME - periodo adelantado"
@@ -120,7 +120,16 @@ function file_content_validate
         echo 2
         return 0
     fi
-    echo 0
+    if file -0 "$DIR_ARRIBOS/$FILE_NAME" | grep -q text 
+    then 
+        echo 0
+    else 
+        # archivo vacio
+        MESSAGE="novedad rechazada: $FILE_NAME - archivo no valido" 
+        log "$MESSAGE"
+        echo 2
+        return 0
+    fi
 }
 
 function move_file
