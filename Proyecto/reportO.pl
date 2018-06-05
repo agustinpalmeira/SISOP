@@ -4,6 +4,9 @@
 #          SSOO Grupo 03 - 2018, 1° Cuatrimestre      #
 #                       Comando reporO.pl              #
 ########################################################
+
+use Data::Dumper;
+
 # Levanto las variables de ambiente.
 if ( !exists $ENV{DIR_MASTER} ) {
 	print "El sistema no se halla inicializado.\n";
@@ -133,11 +136,12 @@ sub cargoPPI{
 # Cargo archivos de prestamos para el pais indiccado en los parametros de la busqueda
 sub cargoPrestamos{
 	my %prestamos;
-	open( my $fh,"<:crlf", $PROCDIR . "prestamos.".$pais )
+	open( my $fh,"<:crlf", $PROCDIR . "PRESTAMOS.".$pais )
 		|| return %prestamosImpagos;
+
 	while (my $row = <$fh>) {
 		chomp $row;
-		@regTemp = split(";",$row);
+		my @regTemp = split(";",$row);
 		if ($sistema!=0 and $sistema != $regTemp[0]){
 			next;
 		}
@@ -148,6 +152,7 @@ sub cargoPrestamos{
 				next;
 			}
 		}
+
 		$auxFecha = $regTemp[14];
 		$auxFecha  =~ s|(\d{2})/(\d{2})/(\d{4})|$3$2$1|;
 

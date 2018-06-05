@@ -93,8 +93,8 @@ function read_fields
 {
     declare local CURRENT_DATE=$(date +"%e/%m/%Y")
     declare local FILE_NAME="$1"
-    COUNTRY=$(echo $COUNTRY_SYSTEM_CODE | cut -d - -f 1)
-    SYSTEM_CODE=$(echo $COUNTRY_SYSTEM_CODE | cut -d - -f 2)
+    COUNTRY=$(echo $COUNTRY_SYSTEM_CODE | cut -d - -f1)
+    SYSTEM_CODE=$(echo $COUNTRY_SYSTEM_CODE | cut -d - -f2)
     DONE=false
     until $DONE
     do
@@ -106,16 +106,16 @@ function read_fields
         read LINE || DONE=true
         for FIELD_DESCRIPTION in $(grep "^$COUNTRY_SYSTEM_CODE" "$PATH_T2" | sed "s/^$COUNTRY_SYSTEM_CODE-\(.*\)/\1/g")
         do
-            FIELD_NAME=$(echo $FIELD_DESCRIPTION | cut -d - -f 1)
-            FIELD_POS=$(echo $FIELD_DESCRIPTION | cut -d - -f 2)
-            FIELD_TYPE=$(echo $FIELD_DESCRIPTION | cut -d - -f 3)
+            FIELD_NAME=$(echo $FIELD_DESCRIPTION | cut -d - -f1)
+            FIELD_POS=$(echo $FIELD_DESCRIPTION | cut -d - -f2)
+            FIELD_TYPE=$(echo $FIELD_DESCRIPTION | cut -d - -f3)
             ## Leer campo
             # TODO: revisar como usar ; desde una variable
             if [ ";" != $FIELD_SEPARATOR ]
             then
-                FIELD=$(echo $LINE | cut -d ';' -f "$FIELD_POS")
+                FIELD=$(echo $LINE | cut -d ';' -f"$FIELD_POS")
             else
-                FIELD=$(echo $LINE | cut -d "$FIELD_SEPARATOR" -f "$FIELD_POS")
+                FIELD=$(echo $LINE | cut -d "$FIELD_SEPARATOR" -f"$FIELD_POS")
             fi
             
             ## Obtener valor del campo segun el tipo,
@@ -147,9 +147,9 @@ function read_fields
             then
                 if [ "$FIELD_NAME" == "CTB_FE" ]
                 then
-                    DAY=$(echo "$VALUE" | cut -d - -f 1)
-                    MONTH=$(echo "$VALUE" | cut -d - -f 2)
-                    YEAR=$(echo "$VALUE" | cut -d - -f 3)
+                    DAY=$(echo "$VALUE" | cut -d - -f1)
+                    MONTH=$(echo "$VALUE" | cut -d - -f2)
+                    YEAR=$(echo "$VALUE" | cut -d - -f3)
                 elif [ "$FIELD_NAME" == "CTB_ESTADO" ]
                 then
                     ESTADO="$VALUE"
@@ -181,7 +181,7 @@ function read_fields
             fi
         done
         MT_REST=$(echo "$MT_PRES + $MT_IMPAGO + $MT_INDE + $MT_INNODE - $MT_DEB" | sed 's/,/./g' | bc)
-
+	
         REGISTER="$SYSTEM_CODE;$YEAR;$MONTH;$DAY;$CTB_ESTADO;$PRES_ID;$MT_PRES;$MT_IMPAGO;$MT_INDE;$MT_INNODE;$MT_DEB;$MT_REST;$PRES_CLI_ID;$PRES_CLI;$CURRENT_DATE;$USER"
         echo "$REGISTER" >> "$DIR_INDICTED/PRESTAMOS.$COUNTRY"
     done < "$DIR_ACCEPTED/$FILE_NAME"
