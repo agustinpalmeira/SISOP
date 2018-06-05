@@ -227,13 +227,13 @@ function setearVariablesDeAmbiente() {
 	mostrarLoguearEvento "$LOGINICIO" "INF" "La variable DIR_INDICTED con valor $DIR_INDICTED fue seteada."
 
 	#Deberia verificar si estos archivos existen?
-	export PATH_MASTER="$GRUPO/install_files/master_files/p-s.mae"
+	export PATH_MASTER="$DIR_MASTER/p-s.mae"
 	mostrarLoguearEvento "$LOGINICIO" "INF" "La variable PATH_MASTER con valor $PATH_MASTER fue seteada."
 
-	export PATH_T1="$GRUPO/install_files/master_files/T1.tab"
+	export PATH_T1="$DIR_MASTER/T1.tab"
 	mostrarLoguearEvento "$LOGINICIO" "INF" "La variable PATH_T1 con valor $PATH_T1 fue seteada."
 
-	export PATH_T2="$GRUPO""install_files/master_files/T2.tab"
+	export PATH_T2="$DIR_MASTER/T2.tab"
 	mostrarLoguearEvento "$LOGINICIO" "INF" "La variable PATH_T2 con valor $PATH_T2 fue seteada."
 
 	export VARIABLES_SETEADAS=1

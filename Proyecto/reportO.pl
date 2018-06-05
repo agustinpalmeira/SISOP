@@ -4,8 +4,6 @@
 #          SSOO Grupo 03 - 2018, 1° Cuatrimestre      #
 #                       Comando reporO.pl              #
 ########################################################
-
-use Data::Dumper;
 # Levanto las variables de ambiente.
 if ( !exists $ENV{DIR_MASTER} ) {
 	print "El sistema no se halla inicializado.\n";
@@ -239,7 +237,7 @@ sub escriboComparado{
 	if ( !&existeComparado($nombreArchivo) ) {
 		$crearArchivo = 1;
 	}
-	open( ARCH, ">$REPODIR" . $nombreArchivo );
+	open( ARCH, ">>$REPODIR" . $nombreArchivo );
 	#Si el archivo no existe, imprimo la fila de encabezados, sino se añade al archivo
 	#existente
 	if ($crearArchivo){
