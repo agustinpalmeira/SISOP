@@ -5,8 +5,6 @@
 #                       Comando reporO.pl              #
 ########################################################
 
-use Data::Dumper;
-
 # Levanto las variables de ambiente.
 if ( !exists $ENV{DIR_MASTER} ) {
 	print "El sistema no se halla inicializado.\n";
@@ -90,6 +88,7 @@ sub cargoPPI{
 	my %prestamosImpagos;
 	open( my $fh,"<:crlf", $MAEDIR . "PPI.mae" )
 		|| die "No se pudo encontrar el Archivo Maestro Contable de Préstamos Personales Impagos";
+		print "prestamos:\n\n";
 	while (my $row = <$fh>) {
 		chomp $row;
 
@@ -97,6 +96,8 @@ sub cargoPPI{
 		if ($pais ne $pais_id){
 			next;
 		}
+		$ctb_mes =&convNum2Dig($ctb_mes);
+		$ctb_dia =&convNum2Dig($ctb_dia);
 		if ($sistema!=0 and $sistema!=$sis_id){
 			next;
 		}
@@ -225,7 +226,7 @@ sub procesoComparado{
 		$regAux[5] = $prestamos{$pres_id}{$ppi{$pres_id}{ctb_anio}}{$ppi{$pres_id}{ctb_mes}}{ctb_estado};
 		$regAux[6] = $ppi{$pres_id}{mt_res};
 		$regAux[7] = $prestamos{$pres_id}{$ppi{$pres_id}{ctb_anio}}{$ppi{$pres_id}{ctb_mes}}{mt_res};
-		$regAux[8] = $regAux[6] - $regAux[7];
+		$regAux[8] = sprintf("%.2f",$regAux[6] - $regAux[7]);
 		$regAux[9] = $ppi{$pres_id}{ctb_anio};
 		$regAux[10] = $ppi{$pres_id}{ctb_mes};
 		$regAux[11] = $ppi{$pres_id}{ctb_dia};
