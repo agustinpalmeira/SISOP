@@ -41,7 +41,7 @@ LOG_FILE="$DIR_LOGS/"detecto.log
 function log
 {
     declare local EVENT=$1
-    if [ -f "$LOG_FILE" ] 
+    if [ -f "$LOG_FILE" ]
     then
         declare local LOG_SIZE=$(stat --printf="%s" "$LOG_FILE")
         if [ $LOG_SIZE -gt $MAX_SIZE ]
@@ -83,7 +83,7 @@ function file_name_validate
             echo 3
             return 0
         fi
-        if  [ $(date +"%Y") -lt "$YEAR" ] || ([ $(date +"%Y") -eq "$YEAR" ] && [ "$MONTH" -gt $(date +"%m") ]) 
+        if  [ $(date +"%Y") -lt "$YEAR" ] || ([ $(date +"%Y") -eq "$YEAR" ] && [ "$MONTH" -gt $(date +"%m") ])
         then
             # fecha futura
             MESSAGE="novedad rechazada: $FILE_NAME - periodo adelantado"
@@ -107,7 +107,7 @@ function file_content_validate
     if [ ! -f "$DIR_ARRIBOS/$FILE_NAME" ]
     then
         # archivo no regular
-        MESSAGE="novedad rechazada: $FILE_NAME - archivo no regular" 
+        MESSAGE="novedad rechazada: $FILE_NAME - archivo no regular"
         log "$MESSAGE"
         echo 1
         return 0
@@ -115,17 +115,17 @@ function file_content_validate
     if [ ! -s "$DIR_ARRIBOS/$FILE_NAME" ]
     then
         # archivo vacio
-        MESSAGE="novedad rechazada: $FILE_NAME - archivo vacio" 
+        MESSAGE="novedad rechazada: $FILE_NAME - archivo vacio"
         log "$MESSAGE"
         echo 2
         return 0
     fi
-    if file -0 "$DIR_ARRIBOS/$FILE_NAME" | grep -q text 
-    then 
+    if file -0 "$DIR_ARRIBOS/$FILE_NAME" | grep -q text
+    then
         echo 0
-    else 
+    else
         # archivo vacio
-        MESSAGE="novedad rechazada: $FILE_NAME - archivo no valido" 
+        MESSAGE="novedad rechazada: $FILE_NAME - archivo no valido"
         log "$MESSAGE"
         echo 2
         return 0
@@ -142,13 +142,13 @@ function move_file
     then
         mv "$ORIGIN_DIR/$FILE_NAME" "$DESTINATION_DIR/$FILE_NAME"
     else
-        mv "$ORIGIN_DIR/$FILE_NAME" "$DESTINATION_DIR/$FILE_NAME.$OCURRENCIES"        
+        mv "$ORIGIN_DIR/$FILE_NAME" "$DESTINATION_DIR/$FILE_NAME.$OCURRENCIES"
     fi
 }
 
 function start_interpreter
 {
-    if [ $(pgrep -c "interpretO.sh") -gt 0 ]
+    if [ $(pgrep -c "detectO.sh") -gt 1 ]
         then
             return 0
     fi
@@ -156,7 +156,7 @@ function start_interpreter
     then
         return 0
     fi
-    ./interpretO.sh 
+    ./interpretO.sh &
     PID_INTERPRETER=$!
     log "interpreter is runing - PID: $PID_INTERPRETER"
 }
@@ -172,7 +172,7 @@ then
         let COUNTER=COUNTER+1
         if [ "$(ls $DIR_ARRIBOS | wc -l)" -gt 0 ]
         then
-            for FILE in $(ls -1 "$DIR_ARRIBOS") 
+            for FILE in $(ls -1 "$DIR_ARRIBOS")
             do
                 if [ $(file_name_validate "$FILE") -eq 0 ]
                 then
