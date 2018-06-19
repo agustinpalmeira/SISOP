@@ -111,24 +111,27 @@ function read_fields
             FIELD_TYPE=$(echo $FIELD_DESCRIPTION | cut -d - -f3)
             ## Leer campo
             # TODO: revisar como usar ; desde una variable
-            if [ ";" != $FIELD_SEPARATOR ]
+            if [ "," != $FIELD_SEPARATOR ]
             then
                 FIELD=$(echo $LINE | cut -d ';' -f"$FIELD_POS")
             else
-                FIELD=$(echo $LINE | cut -d "$FIELD_SEPARATOR" -f"$FIELD_POS")
+                FIELD=$(echo $LINE | cut -d "," -f"$FIELD_POS")
             fi
-            
+                        
             ## Obtener valor del campo segun el tipo,
             ## el valor obtenido se encuentra en VALUE
             ## las fechas siempre se expresan como dd-mm-yyyy
             if [ $(echo "$FIELD_TYPE" | grep -c "^[dmy]\{6\}[0-9]\{1,2\}") -eq 1 ]
             then
+                TIPOFECHA=$(echo "$FIELD_TYPE" | sed "s/^\([dmy]\{6\}\)/\1/")
+                CONSEPARADOR=$(echo "$FIELD_TYPE" | sed "s/^[dmy]\{6\}\([0-9]\{1,2\}\)/\1/")
+                SEPARADOR="[^0-9]*"
                 # fechas
                 if [ $(echo "$FIELD_TYPE" | grep -c "^ddmmyy") -eq 1 ]
                 then
-                    VALUE=$(echo "$FIELD" | sed "s/\([0-9]\{2\}\).*\([0-9]\{2\}\).*\([0-9]\{4\}\)/\1-\2-\3/g")
+                    VALUE=$(echo "$FIELD" | sed "s/\([0-9]\{2\}\)$SEPARADOR\([0-9]\{2\}\)$SEPARADOR\([0-9]\{4\}\)/\1-\2-\3-/g")
                 else
-                    VALUE=$(echo "$FIELD" | sed "s/\([0-9]\{4\}\).*\([0-9]\{2\}\).*\([0-9]\{2\}\)/\3-\2-\1/g")
+                    VALUE=$(echo "$FIELD" | sed "s/\([0-9]\{4\}\)$SEPARADOR\([0-9]\{2\}\)$SEPARADOR\([0-9]\{2\}\)/\3-\2-\1-/g")
                 fi
             elif [ $(echo "$FIELD_TYPE" | grep -c "^\$[0-9]\+") -eq 1 ]
             then
@@ -182,7 +185,7 @@ function read_fields
         done
         MT_REST=$(echo "$MT_PRES + $MT_IMPAGO + $MT_INDE + $MT_INNODE - $MT_DEB" | sed 's/,/./g' | bc)
 	
-        REGISTER="$SYSTEM_CODE;$YEAR;$MONTH;$DAY;$CTB_ESTADO;$PRES_ID;$MT_PRES;$MT_IMPAGO;$MT_INDE;$MT_INNODE;$MT_DEB;$MT_REST;$PRES_CLI_ID;$PRES_CLI;$CURRENT_DATE;$USER"
+        REGISTER="$SYSTEM_CODE;$YEAR;$MONTH;$DAY;$ESTADO;$PRES_ID;$MT_PRES;$MT_IMPAGO;$MT_INDE;$MT_INNODE;$MT_DEB;$MT_REST;$PRES_CLI_ID;$PRES_CLI;$CURRENT_DATE;$USER"
         echo "$REGISTER" >> "$DIR_INDICTED/PRESTAMOS.$COUNTRY"
     done < "$DIR_ACCEPTED/$FILE_NAME"
     return 0
