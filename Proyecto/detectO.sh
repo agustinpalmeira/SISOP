@@ -156,7 +156,7 @@ function start_interpreter
     then
         return 0
     fi
-    ./interpretO.sh &
+    ./interpretO.sh 
     PID_INTERPRETER=$!
     log "interpreter is runing - PID: $PID_INTERPRETER"
 }
